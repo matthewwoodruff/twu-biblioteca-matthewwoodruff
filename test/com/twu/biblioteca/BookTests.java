@@ -2,6 +2,9 @@ package com.twu.biblioteca;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -18,17 +21,17 @@ public class BookTests {
 
     @Test
     public void testBookHasTitle() {
-        assertEquals(book.getTitle(), "Great Expectations");
+        assertThat(book.getTitle(), is("Great Expectations"));
     }
 
     @Test
     public void testBookHasAuthor() {
-        assertEquals(book.getAuthor(), "Charles Dickens");
+        assertThat(book.getAuthor(), is("Charles Dickens"));
     }
 
     @Test
     public void testBookHasYear() {
-        assertEquals(book.getYear(), "1860");
+        assertThat(book.getYear(), is("1860"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -63,8 +66,8 @@ public class BookTests {
 
     @Test
     public void testBookEquality() {
-        assertEquals(book, new Book("Great Expectations", "Charles Dickens", "1860"));
-        assertEquals(book.hashCode(), new Book("Great Expectations", "Charles Dickens", "1860").hashCode());
+        assertThat(book, is(new Book("Great Expectations", "Charles Dickens", "1860")));
+        assertThat(book.hashCode(), is(new Book("Great Expectations", "Charles Dickens", "1860").hashCode()));
     }
-    
+
 }
