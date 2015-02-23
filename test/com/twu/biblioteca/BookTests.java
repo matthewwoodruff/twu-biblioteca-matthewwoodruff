@@ -61,4 +61,10 @@ public class BookTests {
         new Book("Great Expectations", "Charles Dickens", "");
     }
 
+    @Test
+    public void testBookEquality() {
+        assertEquals(book, new Book("Great Expectations", "Charles Dickens", "1860"));
+        assertEquals(book.hashCode(), new Book("Great Expectations", "Charles Dickens", "1860").hashCode());
+    }
+    
 }
