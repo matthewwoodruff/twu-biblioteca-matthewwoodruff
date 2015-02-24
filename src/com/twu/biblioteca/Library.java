@@ -39,19 +39,19 @@ public class Library {
     }
 
     public void checkoutBook(String title) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        checkoutBook(findBookByTitle(title));
+        checkout(findBookByTitle(title));
     }
 
-    public void checkoutBook(Book book) throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
+    public void checkout(Book book) throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
         verifyBookExists(book);
         book.checkOut();
     }
 
     public void returnBook(String title) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
-        returnBook(findBookByTitle(title));
+        returnItem(findBookByTitle(title));
     }
 
-    public void returnBook(Book book) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+    public void returnItem(Book book) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
         verifyBookExists(book);
         book.checkIn();
     }
@@ -68,7 +68,7 @@ public class Library {
         return new ArrayList<Movie>(movies);
     }
 
-    public void checkoutMovie(Movie movie) throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
+    public void checkoutItem(Movie movie) throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
         verifyMovieExists(movie);
         movie.checkOut();
     }

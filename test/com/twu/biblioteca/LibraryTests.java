@@ -74,44 +74,44 @@ public class LibraryTests {
 
     @Test
     public void testCheckoutBookThatExistsAndIsAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutBook(greatExpectations);
+        library.checkout(greatExpectations);
     }
 
     @Test
     public void testCheckoutMovieThatExistsAndIsAvailable() throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        library.checkoutMovie(pulpFiction);
+        library.checkoutItem(pulpFiction);
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckoutBookThatExistsButIsUnavailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutBook(greatExpectations);
-        library.checkoutBook(greatExpectations);
+        library.checkout(greatExpectations);
+        library.checkout(greatExpectations);
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckoutMovieThatExistsButIsUnavailable() throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        library.checkoutMovie(pulpFiction);
-        library.checkoutMovie(pulpFiction);
+        library.checkoutItem(pulpFiction);
+        library.checkoutItem(pulpFiction);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutBookThatDoesNotExist() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutBook(bleakHouse);
+        library.checkout(bleakHouse);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutMovieThatDoesNotExist() throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        library.checkoutMovie(killBill);
+        library.checkoutItem(killBill);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutNullBook() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutBook((Book) null);
+        library.checkout((Book) null);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutNullMovie() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutMovie(null);
+        library.checkout(null);
     }
 
     @Test
@@ -127,40 +127,40 @@ public class LibraryTests {
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckOutBookByTitleThatIsntAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutBook(greatExpectations);
+        library.checkout(greatExpectations);
         library.checkoutBook("Great Expectations");
     }
 
     @Test
     public void testCheckedOutBookDoesNotShowInBookList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        library.checkoutBook(greatExpectations);
+        library.checkout(greatExpectations);
         assertThat(library.getBooks(), is(Arrays.asList(pickwickPapers)));
     }
 
     @Test
     public void testReturnBookThatExistsAndIsCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        library.checkoutBook(greatExpectations);
-        library.returnBook(greatExpectations);
+        library.checkout(greatExpectations);
+        library.returnItem(greatExpectations);
     }
 
     @Test(expected = LibraryItemNotCheckedOutException.class)
     public void testReturnBookThatExistsButIsntCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
-        library.returnBook(greatExpectations);
+        library.returnItem(greatExpectations);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testReturnBookThatDoesntExist() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
-        library.returnBook(bleakHouse);
+        library.returnItem(bleakHouse);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testReturnNullBook() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
-        library.returnBook((Book) null);
+        library.returnItem((Book) null);
     }
 
     @Test
     public void testReturnBookByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        library.checkoutBook(greatExpectations);
+        library.checkout(greatExpectations);
         library.returnBook("Great Expectations");
         assertThat(library.getBooks(), is(Arrays.asList(greatExpectations, pickwickPapers)));
     }
@@ -177,8 +177,8 @@ public class LibraryTests {
 
     @Test
     public void testReturnedBookShowsUpInBookList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        library.checkoutBook(greatExpectations);
-        library.returnBook(greatExpectations);
+        library.checkout(greatExpectations);
+        library.returnItem(greatExpectations);
         assertThat(library.getBooks(), is(Arrays.asList(greatExpectations,pickwickPapers)));
     }
 
