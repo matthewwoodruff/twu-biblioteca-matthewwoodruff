@@ -1,9 +1,14 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.exceptions.BookNotAvailableException;
+import com.twu.biblioteca.exceptions.BookNotCheckedOutException;
+import com.twu.biblioteca.exceptions.BookNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -102,7 +107,31 @@ public class LibraryTests {
 
     @Test(expected = BookNotFoundException.class)
     public void testReturnNullBook() throws BookNotCheckedOutException, BookNotFoundException {
-        library.returnBook(null);
+        library.returnBook((Book)null);
+    }
+
+    @Test
+    public void testReturnBookByTitle() throws BookNotFoundException, BookNotAvailableException, BookNotCheckedOutException {
+        library.checkoutBook(greatExpectations);
+        library.returnBook("Great Expectations");
+        assertThat(library.getBooks(), is(Arrays.asList(greatExpectations, pickwickPapers)));
+    }
+
+    @Test(expected = BookNotFoundException.class)
+    public void testReturnBookByTitleThatDoesntExist() throws BookNotFoundException, BookNotAvailableException, BookNotCheckedOutException {
+        library.returnBook("Hard Times");
+    }
+
+    @Test(expected = BookNotCheckedOutException.class)
+    public void testReturnBookByTitleThatHasntBeenCheckedOut() throws BookNotFoundException, BookNotAvailableException, BookNotCheckedOutException {
+        library.returnBook("Great Expectations");
+    }
+
+    @Test
+    public void testReturnedBookShowsUpInBookList() throws BookNotFoundException, BookNotAvailableException, BookNotCheckedOutException {
+        library.checkoutBook(greatExpectations);
+        library.returnBook(greatExpectations);
+        assertThat(library.getBooks(), is(Arrays.asList(greatExpectations,pickwickPapers)));
     }
 
     @Test
@@ -114,13 +143,5 @@ public class LibraryTests {
     public void testFindBookByTitleThatDoesntExist() {
         assertThat(library.findBookByTitle("Hard Times"), is(nullValue()));
     }
-
-    @Test
-    public void testReturnedBookShowsUpInBookList() throws BookNotFoundException, BookNotAvailableException, BookNotCheckedOutException {
-        library.checkoutBook(greatExpectations);
-        library.returnBook(greatExpectations);
-        assertThat(library.getBooks(), is(Arrays.asList(greatExpectations,pickwickPapers)));
-    }
-
 
 }

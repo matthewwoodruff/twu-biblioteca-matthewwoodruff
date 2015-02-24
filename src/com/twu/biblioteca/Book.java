@@ -33,7 +33,7 @@ public class Book implements Comparable<Book> {
     }
 
     public int getId() {
-        return 1;
+        return id;
     }
 
     @Override
