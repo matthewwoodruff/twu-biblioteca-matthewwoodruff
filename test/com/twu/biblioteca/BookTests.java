@@ -1,5 +1,7 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.exceptions.BookNotAvailableException;
+import com.twu.biblioteca.exceptions.BookNotCheckedOutException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,6 +38,40 @@ public class BookTests {
     @Test
     public void testBookHasId() {
         assertThat(book.getId(), is(1));
+    }
+
+    @Test
+    public void testBookHasCheckedOutIndication() {
+        assertThat(book.isCheckedOut(), is(false));
+    }
+
+    @Test
+    public void testBookHasAvailableIndication() {
+        assertThat(book.isAvailable(), is(true));
+    }
+
+    @Test
+    public void testBookCanBeCheckedOut() throws BookNotAvailableException {
+        book.checkOut();
+        assertThat(book.isCheckedOut(), is(true));
+    }
+
+    @Test(expected = BookNotAvailableException.class)
+    public void testCheckingOutAnUnavailableBookThrowsAnException() throws BookNotAvailableException {
+        book.checkOut();
+        book.checkOut();
+    }
+
+    @Test
+    public void testBookCanBeCheckedIn() throws BookNotAvailableException, BookNotCheckedOutException {
+        book.checkOut();
+        book.checkIn();
+        assertThat(book.isCheckedOut(), is(false));
+    }
+
+    @Test(expected = BookNotCheckedOutException.class)
+    public void testCheckingInABookThatHasntBeenCheckedOutThrowsAnException() throws BookNotCheckedOutException {
+        book.checkIn();
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -107,7 +107,7 @@ public class LibraryTests {
 
     @Test(expected = BookNotFoundException.class)
     public void testReturnNullBook() throws BookNotCheckedOutException, BookNotFoundException {
-        library.returnBook((Book)null);
+        library.returnBook((Book) null);
     }
 
     @Test
@@ -137,6 +137,11 @@ public class LibraryTests {
     @Test
     public void testFindBookByTitle() {
         assertThat(library.findBookByTitle("Great Expectations"), is(greatExpectations));
+    }
+
+    @Test
+    public void testFindBookByNullTitle() {
+        assertThat(library.findBookByTitle(null), is(nullValue()));
     }
 
     @Test

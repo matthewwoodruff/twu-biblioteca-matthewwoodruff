@@ -1,5 +1,8 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.exceptions.BookNotAvailableException;
+import com.twu.biblioteca.exceptions.BookNotCheckedOutException;
+
 /**
  * Created by Matt on 23/02/15.
  */
@@ -9,6 +12,7 @@ public class Book implements Comparable<Book> {
     private final String author;
     private final String year;
     private final int id;
+    private boolean checkedOut = false;
 
     public Book(int id, String title, String author, String year) {
         if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
@@ -34,6 +38,24 @@ public class Book implements Comparable<Book> {
 
     public int getId() {
         return id;
+    }
+
+    public boolean isCheckedOut() {
+        return checkedOut;
+    }
+
+    public void checkOut() throws BookNotAvailableException {
+        if(isCheckedOut()) throw new BookNotAvailableException(this);
+        checkedOut = true;
+    }
+
+    public void checkIn() throws BookNotCheckedOutException {
+        if(isAvailable()) throw new BookNotCheckedOutException(this);
+        checkedOut = false;
+    }
+
+    public boolean isAvailable() {
+        return !isCheckedOut();
     }
 
     @Override
@@ -74,4 +96,5 @@ public class Book implements Comparable<Book> {
     public int compareTo(Book o) {
         return title.compareTo(o.getTitle());
     }
+
 }
