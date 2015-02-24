@@ -3,16 +3,18 @@ package com.twu.biblioteca;
 /**
  * Created by Matt on 23/02/15.
  */
-public class Book {
+public class Book implements Comparable<Book> {
 
     private final String title;
     private final String author;
     private final String year;
+    private final int id;
 
-    public Book(String title, String author, String year) {
+    public Book(int id, String title, String author, String year) {
         if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
         if(author == null || author.isEmpty()) throw new IllegalArgumentException("author cannot be null or empty");
         if(year == null || year.isEmpty()) throw new IllegalArgumentException("year cannot be null or empty");
+        this.id = id;
         this.title = title;
         this.author = author;
         this.year = year;
@@ -30,6 +32,10 @@ public class Book {
         return year;
     }
 
+    public int getId() {
+        return 1;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,6 +43,7 @@ public class Book {
 
         Book book = (Book) o;
 
+        if (id != book.id) return false;
         if (!author.equals(book.author)) return false;
         if (!title.equals(book.title)) return false;
         if (!year.equals(book.year)) return false;
@@ -49,6 +56,7 @@ public class Book {
         int result = title.hashCode();
         result = 31 * result + author.hashCode();
         result = 31 * result + year.hashCode();
+        result = 31 * result + id;
         return result;
     }
 
@@ -58,7 +66,12 @@ public class Book {
                 "title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", year='" + year + '\'' +
+                ", id=" + id +
                 '}';
     }
 
+    @Override
+    public int compareTo(Book o) {
+        return title.compareTo(o.getTitle());
+    }
 }
