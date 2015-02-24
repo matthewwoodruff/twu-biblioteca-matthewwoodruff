@@ -13,7 +13,7 @@ public final class BibliotecaApp {
 
     private final Scanner scanner;
     private final OutputStream outputStream;
-    private final Library library;
+    private final Library<Book> library;
 
     private static final String LIST_BOOKS_OPTION = "List Books";
     private static final String CHECKOUT_BOOK_OPTION = "Checkout Book: <Title>";
@@ -27,7 +27,7 @@ public final class BibliotecaApp {
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
         this.scanner = scanner;
         this.outputStream = outputStream;
-        library = new Library(Book.getDefaultBooks(), Movie.getDefaultMovies());
+        library = new Library<Book>(Book.getDefaultBooks());
     }
 
     public void run() throws IOException, BibliotecaAppQuitException {
@@ -70,13 +70,13 @@ public final class BibliotecaApp {
 
     protected void listBooks(OutputStream outputStream) throws IOException {
         writeLine("Title, Author, Year", outputStream);
-        for( Book book : library.getBooks())
+        for( Book book : library.getItems())
             writeLine(book.getTitle() + ", " + book.getAuthor() + ", " + book.getYear(), outputStream);
     }
 
     protected void checkoutBook(String title, OutputStream outputStream) throws IOException {
         try {
-            library.checkoutBook(title);
+            library.checkoutItemByTitle(title);
             writeLine("Thank you! Enjoy the book.", outputStream);
         } catch (LibraryItemNotFoundException e) {
             writeLine("That book is not available.", outputStream);
@@ -87,7 +87,7 @@ public final class BibliotecaApp {
 
     protected void returnBook(String title, OutputStream outputStream) throws IOException {
         try {
-            library.returnBook(title);
+            library.returnItemByTitle(title);
             writeLine("Thank you for returning the book.", outputStream);
         } catch (LibraryItemNotCheckedOutException e) {
             writeLine("That is not a valid book to return.", outputStream);
