@@ -1,100 +1,58 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.BookNotAvailableException;
-import com.twu.biblioteca.exceptions.BookNotCheckedOutException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by Matt on 23/02/15.
  */
-public class Book implements Comparable<Book> {
+public final class Book extends LibraryItem {
 
-    private final String title;
     private final String author;
-    private final String year;
-    private final int id;
-    private boolean checkedOut = false;
 
     public Book(int id, String title, String author, String year) {
-        if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
+        super(id, title, year);
         if(author == null || author.isEmpty()) throw new IllegalArgumentException("author cannot be null or empty");
-        if(year == null || year.isEmpty()) throw new IllegalArgumentException("year cannot be null or empty");
-        this.id = id;
-        this.title = title;
         this.author = author;
-        this.year = year;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public String getYear() {
-        return year;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public boolean isCheckedOut() {
-        return checkedOut;
-    }
-
-    public void checkOut() throws BookNotAvailableException {
-        if(isCheckedOut()) throw new BookNotAvailableException(this);
-        checkedOut = true;
-    }
-
-    public void checkIn() throws BookNotCheckedOutException {
-        if(isAvailable()) throw new BookNotCheckedOutException(this);
-        checkedOut = false;
-    }
-
-    public boolean isAvailable() {
-        return !isCheckedOut();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         Book book = (Book) o;
 
-        if (id != book.id) return false;
         if (!author.equals(book.author)) return false;
-        if (!title.equals(book.title)) return false;
-        if (!year.equals(book.year)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = title.hashCode();
+        int result = super.hashCode();
         result = 31 * result + author.hashCode();
-        result = 31 * result + year.hashCode();
-        result = 31 * result + id;
         return result;
     }
 
     @Override
     public String toString() {
         return "Book{" +
-                "title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", year='" + year + '\'' +
-                ", id=" + id +
+                "author='" + author + '\'' +
                 '}';
     }
 
-    @Override
-    public int compareTo(Book o) {
-        return title.compareTo(o.getTitle());
+    protected static SortedSet<Book> getDefaultBooks() {
+        final SortedSet<Book> books = new TreeSet<Book>();
+        books.add(new Book(1, "Great Expectations", "Charles Dickens", "1860"));
+        books.add(new Book(2, "The Pickwick Papers", "Charles Dickens", "1837"));
+        books.add(new Book(3, "Bleak House", "Charles Dickens", "1853"));
+        return books;
     }
 
 }

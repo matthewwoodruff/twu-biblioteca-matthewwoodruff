@@ -1,7 +1,7 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.BookNotAvailableException;
-import com.twu.biblioteca.exceptions.BookNotCheckedOutException;
+import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
+import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,26 +51,26 @@ public class BookTests {
     }
 
     @Test
-    public void testBookCanBeCheckedOut() throws BookNotAvailableException {
+    public void testBookCanBeCheckedOut() throws LibraryItemNotAvailableException {
         book.checkOut();
         assertThat(book.isCheckedOut(), is(true));
     }
 
-    @Test(expected = BookNotAvailableException.class)
-    public void testCheckingOutAnUnavailableBookThrowsAnException() throws BookNotAvailableException {
+    @Test(expected = LibraryItemNotAvailableException.class)
+    public void testCheckingOutAnUnavailableBookThrowsAnException() throws LibraryItemNotAvailableException {
         book.checkOut();
         book.checkOut();
     }
 
     @Test
-    public void testBookCanBeCheckedIn() throws BookNotAvailableException, BookNotCheckedOutException {
+    public void testBookCanBeCheckedIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
         book.checkOut();
         book.checkIn();
         assertThat(book.isCheckedOut(), is(false));
     }
 
-    @Test(expected = BookNotCheckedOutException.class)
-    public void testCheckingInABookThatHasntBeenCheckedOutThrowsAnException() throws BookNotCheckedOutException {
+    @Test(expected = LibraryItemNotCheckedOutException.class)
+    public void testCheckingInABookThatHasntBeenCheckedOutThrowsAnException() throws LibraryItemNotCheckedOutException {
         book.checkIn();
     }
 
@@ -106,8 +106,9 @@ public class BookTests {
 
     @Test
     public void testBookEquality() {
-        assertThat(book, is(new Book(1, "Great Expectations", "Charles Dickens", "1860")));
-        assertThat(book.hashCode(), is(new Book(1, "Great Expectations", "Charles Dickens", "1860").hashCode()));
+        final Book book = new Book(1, "Great Expectations", "Charles Dickens", "1860");
+        assertThat(book, is(book));
+        assertThat(book.hashCode(), is(book.hashCode()));
     }
 
 }

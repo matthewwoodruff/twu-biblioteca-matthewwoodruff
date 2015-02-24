@@ -2,8 +2,7 @@ package com.twu.biblioteca;
 
 import com.sun.deploy.util.StringUtils;
 import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
-import com.twu.biblioteca.exceptions.BookNotAvailableException;
-import com.twu.biblioteca.exceptions.BookNotFoundException;
+import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -142,7 +141,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutAnUnavailableBook() throws BookNotFoundException, BookNotAvailableException, IOException {
+    public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException {
         app.checkoutBook("Great Expectations", outputStream);
         app.checkoutBook("Great Expectations", testOutputStream);
 
@@ -161,7 +160,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCheckedOutBookDoesNotAppearInBookList() throws BookNotFoundException, BookNotAvailableException, IOException, BibliotecaAppQuitException {
+    public void testCheckedOutBookDoesNotAppearInBookList() throws LibraryItemNotFoundException, IOException, BibliotecaAppQuitException {
         app.checkoutBook("Great Expectations", outputStream);
         app.selectMenuOption("List Books", testOutputStream);
 
@@ -182,7 +181,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerReturnsABookSuccessfully() throws BookNotFoundException, BookNotAvailableException, IOException {
+    public void testCustomerReturnsABookSuccessfully() throws LibraryItemNotFoundException, IOException {
         app.checkoutBook("Great Expectations", outputStream);
         app.returnBook("Great Expectations", testOutputStream);
 
@@ -210,7 +209,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testReturnedBookAppearsInBookList() throws IOException, BookNotFoundException, BookNotAvailableException, BibliotecaAppQuitException {
+    public void testReturnedBookAppearsInBookList() throws IOException, LibraryItemNotFoundException, BibliotecaAppQuitException {
         app.checkoutBook("Great Expectations", outputStream);
         app.returnBook("Great Expectations", outputStream);
         app.selectMenuOption("List Books", testOutputStream);

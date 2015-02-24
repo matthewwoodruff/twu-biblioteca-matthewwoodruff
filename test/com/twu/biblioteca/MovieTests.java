@@ -139,4 +139,11 @@ public class MovieTests {
         pulpFiction.checkIn();
     }
 
+    @Test
+    public void testMovieEquality() {
+        final Movie movie = new Movie(1, "Pulp Fiction", "1994", "Quentin Tarantino", 9);
+        assertThat(pulpFiction, is(movie));
+        assertThat(pulpFiction.hashCode(), is(movie.hashCode()));
+    }
+
 }

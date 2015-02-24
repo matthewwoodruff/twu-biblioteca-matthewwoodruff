@@ -1,13 +1,13 @@
 package com.twu.biblioteca;
 
 import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
-import com.twu.biblioteca.exceptions.BookNotAvailableException;
-import com.twu.biblioteca.exceptions.BookNotCheckedOutException;
-import com.twu.biblioteca.exceptions.BookNotFoundException;
+import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
+import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
+import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.Scanner;
 
 public final class BibliotecaApp {
 
@@ -27,7 +27,7 @@ public final class BibliotecaApp {
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
         this.scanner = scanner;
         this.outputStream = outputStream;
-        library = new Library(getDefaultBooks());
+        library = new Library(Book.getDefaultBooks(), Movie.getDefaultMovies());
     }
 
     public void run() throws IOException, BibliotecaAppQuitException {
@@ -78,9 +78,9 @@ public final class BibliotecaApp {
         try {
             library.checkoutBook(title);
             writeLine("Thank you! Enjoy the book.", outputStream);
-        } catch (BookNotFoundException e) {
+        } catch (LibraryItemNotFoundException e) {
             writeLine("That book is not available.", outputStream);
-        } catch (BookNotAvailableException e) {
+        } catch (LibraryItemNotAvailableException e) {
             writeLine("That book is not available.", outputStream);
         }
     }
@@ -89,9 +89,9 @@ public final class BibliotecaApp {
         try {
             library.returnBook(title);
             writeLine("Thank you for returning the book.", outputStream);
-        } catch (BookNotCheckedOutException e) {
+        } catch (LibraryItemNotCheckedOutException e) {
             writeLine("That is not a valid book to return.", outputStream);
-        } catch (BookNotFoundException e) {
+        } catch (LibraryItemNotFoundException e) {
             writeLine("That is not a valid book to return.", outputStream);
         }
     }
@@ -112,14 +112,6 @@ public final class BibliotecaApp {
         } catch (BibliotecaAppQuitException e) {
             System.exit(0);
         }
-    }
-
-    private static SortedSet<Book> getDefaultBooks() {
-        final SortedSet<Book> books = new TreeSet<Book>();
-        books.add(new Book(1, "Great Expectations", "Charles Dickens", "1860"));
-        books.add(new Book(2, "The Pickwick Papers", "Charles Dickens", "1837"));
-        books.add(new Book(3, "Bleak House", "Charles Dickens", "1853"));
-        return books;
     }
 
 }

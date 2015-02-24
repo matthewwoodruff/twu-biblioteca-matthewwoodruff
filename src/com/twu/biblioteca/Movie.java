@@ -1,43 +1,23 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
-import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by Matt on 24/02/15.
  */
-public class Movie {
+public final class Movie extends LibraryItem {
 
-    private final int id;
-    private final String title;
-    private final String year;
     private final String director;
     private final Integer rating;
-    private boolean checkedOut = false;
 
     public Movie(final int id, final String title, final String year,
                  final String director, final Integer rating) {
-        if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
-        if(year == null || year.isEmpty()) throw new IllegalArgumentException("year cannot be null or empty");
+        super(id, title, year);
         if(director == null || director.isEmpty()) throw new IllegalArgumentException("director cannot be null or empty");
         if(rating != null && (rating < 1 || rating > 10)) throw new IllegalArgumentException("rating must be between 1 and 10");
-        this.id = id;
-        this.title = title;
-        this.year = year;
         this.director = director;
         this.rating = rating;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getYear() {
-        return year;
     }
 
     public String getDirector() {
@@ -56,22 +36,35 @@ public class Movie {
         return new Movie(id, title, year, director, rating);
     }
 
-    public boolean isCheckedOut() {
-        return checkedOut;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Movie movie = (Movie) o;
+
+        if (!director.equals(movie.director)) return false;
+        if (rating != null ? !rating.equals(movie.rating) : movie.rating != null) return false;
+
+        return true;
     }
 
-    public boolean isAvailable() {
-        return !checkedOut;
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + director.hashCode();
+        result = 31 * result + (rating != null ? rating.hashCode() : 0);
+        return result;
     }
 
-    public void checkOut() throws LibraryItemNotAvailableException {
-        if(isCheckedOut()) throw new LibraryItemNotAvailableException();
-        checkedOut = true;
+    protected static SortedSet<Movie> getDefaultMovies() {
+        final SortedSet<Movie> movies = new TreeSet<Movie>();
+        movies.add(Movie.createRatedMovie(1, "Pulp Fiction", "Quentin Tarantino", "1994", 9));
+        movies.add(Movie.createRatedMovie(1, "Reservior Dogs", "Quentin Tarantino", "1992", 8));
+        movies.add(Movie.createUnratedMovie(1, "Kill Bill", "Quentin Tarantino", "2003"));
+        return movies;
     }
 
-    public void checkIn() throws LibraryItemNotCheckedOutException {
-        if(isAvailable()) throw new LibraryItemNotCheckedOutException();
-        checkedOut = false;
-    }
 }
 
