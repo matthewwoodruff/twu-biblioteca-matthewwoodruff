@@ -11,19 +11,26 @@ import java.util.*;
  */
 public class Library {
 
-    private final SortedSet<Book> books;
-    private final SortedSet<Movie> movies;
-    private final Map<String, Book> bookMap;
+    private final SortedSet<Book> books = new TreeSet<Book>();
+    private final SortedSet<Movie> movies = new TreeSet<Movie>();
+    private final List<LibraryItem> allItems = new ArrayList<LibraryItem>();
+
+    private final Map<String, Book> bookTitleMap = new HashMap<String, Book>();
+    private final Map<String, Movie> movieTitleMap = new HashMap<String, Movie>();
 
     public Library(Set<Book> books, Set<Movie> movies) {
         if (books == null) throw new IllegalArgumentException("books cannot be null");
         if (movies == null) throw new IllegalArgumentException("movies cannot be null");
-        this.books = new TreeSet<Book>(books);
-        this.movies = new TreeSet<Movie>(movies);
+        this.books.addAll(books);
+        this.movies.addAll(movies);
+        allItems.addAll(books);
+        allItems.addAll(movies);
 
-        bookMap = new HashMap<String, Book>();
         for(final Book book : books)
-            bookMap.put(book.getTitle(), book);
+            bookTitleMap.put(book.getTitle(), book);
+
+        for(final Movie movie : movies)
+            movieTitleMap.put(movie.getTitle(), movie);
     }
 
     public List<Book> getBooks() {
@@ -34,43 +41,49 @@ public class Library {
         return availableBooks;
     }
 
+    public List<Movie> getMovies() {
+        final List<Movie> availableMovies = new ArrayList<Movie>();
+        for(final Movie movie : movies)
+            if (movie.isAvailable())
+                availableMovies.add(movie);
+        return availableMovies;
+    }
+
     public Book findBookByTitle(String title) {
-        return bookMap.get(title);
+        return bookTitleMap.get(title);
     }
 
     public void checkoutBook(String title) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        checkout(findBookByTitle(title));
-    }
-
-    public void checkout(Book book) throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        verifyBookExists(book);
-        book.checkOut();
+        checkoutItem(findBookByTitle(title));
     }
 
     public void returnBook(String title) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
         returnItem(findBookByTitle(title));
     }
 
-    public void returnItem(Book book) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
-        verifyBookExists(book);
-        book.checkIn();
+    public void returnItem(LibraryItem item) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+        verifyItemExists(item);
+        item.checkIn();
     }
 
-    private void verifyBookExists(Book book) throws LibraryItemNotFoundException {
-        if(book == null || !books.contains(book)) throw new LibraryItemNotFoundException();
+    private void verifyItemExists(LibraryItem item) throws LibraryItemNotFoundException {
+        if(item == null || !allItems.contains(item)) throw new LibraryItemNotFoundException();
     }
 
-    private void verifyMovieExists(Movie movie) throws LibraryItemNotFoundException {
-        if(movie == null || !movies.contains(movie)) throw new LibraryItemNotFoundException();
+    public void checkoutItem(LibraryItem item) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+        verifyItemExists(item);
+        item.checkOut();
     }
 
-    public List<Movie> getMovies() {
-        return new ArrayList<Movie>(movies);
+    public void checkoutMovie(String title) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+        checkoutItem(findMovieByTitle(title));
     }
 
-    public void checkoutItem(Movie movie) throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        verifyMovieExists(movie);
-        movie.checkOut();
+    public Movie findMovieByTitle(String title) {
+        return movieTitleMap.get(title);
     }
 
+    public void returnMovie(String title) throws LibraryItemNotCheckedOutException, LibraryItemNotFoundException {
+        returnItem(findMovieByTitle(title));
+    }
 }
