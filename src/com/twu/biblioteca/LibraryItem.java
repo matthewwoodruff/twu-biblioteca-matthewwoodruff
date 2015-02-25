@@ -6,13 +6,13 @@ import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 /**
  * Created by Matt on 24/02/15.
  */
-public abstract class LibraryItem implements Comparable<LibraryItem> {
+public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T> {
 
     private final String title;
     private final String year;
     private boolean checkedOut = false;
 
-    protected LibraryItem(String title, String year) {
+    protected LibraryItem(final String title, final String year) {
         if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
         if(year == null || year.isEmpty()) throw new IllegalArgumentException("year cannot be null or empty");
         this.title = title;
@@ -46,7 +46,7 @@ public abstract class LibraryItem implements Comparable<LibraryItem> {
     }
 
     @Override
-    public int compareTo(LibraryItem o) {
+    public int compareTo(T o) {
         return title.compareTo(o.getTitle());
     }
 

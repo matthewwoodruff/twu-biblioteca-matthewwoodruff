@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by Matt on 23/02/15.
  */
-public final class Book extends LibraryItem {
+public final class Book extends LibraryItem<Book> {
 
     private final String author;
 
@@ -44,7 +44,7 @@ public final class Book extends LibraryItem {
     public String toString() {
         return "Book{" +
                 "author='" + author + '\'' +
-                '}';
+                "} " + super.toString();
     }
 
     protected static Set<Book> getDefaultBooks() {

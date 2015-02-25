@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by Matt on 24/02/15.
  */
-public final class Movie extends LibraryItem {
+public final class Movie extends LibraryItem<Movie> {
 
     private final String director;
     private final Integer rating;
@@ -56,6 +56,14 @@ public final class Movie extends LibraryItem {
         result = 31 * result + director.hashCode();
         result = 31 * result + (rating != null ? rating.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "director='" + director + '\'' +
+                ", rating=" + rating +
+                "} " + super.toString();
     }
 
     protected static Set<Movie> getDefaultMovies() {
