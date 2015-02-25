@@ -10,7 +10,6 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
 
     private final String title;
     private final String year;
-    private boolean checkedOut = false;
     private Customer checkedOutBy;
 
     protected LibraryItem(final String title, final String year) {
@@ -29,13 +28,12 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
     }
 
     public boolean isCheckedOut() {
-        return checkedOut;
+        return checkedOutBy != null;
     }
 
     public void checkOut(Customer checkedOutBy) throws LibraryItemNotAvailableException {
         if(checkedOutBy == null) throw new IllegalArgumentException("checkedOutBy cannot be null");
         if(isCheckedOut()) throw new LibraryItemNotAvailableException();
-        checkedOut = true;
         this.checkedOutBy = checkedOutBy;
     }
 
@@ -50,7 +48,7 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
 
     public void checkIn() throws LibraryItemNotCheckedOutException {
         verifyItemIsCheckedOut();
-        checkedOut = false;
+        checkedOutBy = null;
     }
 
     public boolean isAvailable() {
@@ -69,7 +67,7 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
 
         LibraryItem that = (LibraryItem) o;
 
-        if (checkedOut != that.checkedOut) return false;
+        if (checkedOutBy != null ? !checkedOutBy.equals(that.checkedOutBy) : that.checkedOutBy != null) return false;
         if (!title.equals(that.title)) return false;
         if (!year.equals(that.year)) return false;
 
@@ -78,10 +76,9 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
 
     @Override
     public int hashCode() {
-        int result = 1;
-        result = 31 * result + title.hashCode();
+        int result = title.hashCode();
         result = 31 * result + year.hashCode();
-        result = 31 * result + (checkedOut ? 1 : 0);
+        result = 31 * result + (checkedOutBy != null ? checkedOutBy.hashCode() : 0);
         return result;
     }
 
@@ -90,8 +87,8 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
         return "LibraryItem{" +
                 "title='" + title + '\'' +
                 ", year='" + year + '\'' +
-                ", checkedOut=" + checkedOut +
+                ", checkedOutBy=" + checkedOutBy +
                 '}';
     }
-
+    
 }

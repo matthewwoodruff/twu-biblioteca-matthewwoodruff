@@ -74,6 +74,11 @@ public class LibraryTests {
         library.checkoutItem(null, customer);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCheckoutItemWithNullCustomerThrowsAnException() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+        library.checkoutItem(greatExpectations, null);
+    }
+
     @Test
     public void testCheckoutItemByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
         library.checkoutItemByTitle("Great Expectations", customer);
