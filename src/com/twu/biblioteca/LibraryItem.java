@@ -11,7 +11,7 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
     private final String title;
     private final String year;
     private boolean checkedOut = false;
-    private User checkedOutBy;
+    private Customer checkedOutBy;
 
     protected LibraryItem(final String title, final String year) {
         if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
@@ -32,14 +32,14 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
         return checkedOut;
     }
 
-    public void checkOut(User checkedOutBy) throws LibraryItemNotAvailableException {
+    public void checkOut(Customer checkedOutBy) throws LibraryItemNotAvailableException {
         if(checkedOutBy == null) throw new IllegalArgumentException("checkedOutBy cannot be null");
         if(isCheckedOut()) throw new LibraryItemNotAvailableException();
         checkedOut = true;
         this.checkedOutBy = checkedOutBy;
     }
 
-    public User getCheckedOutBy() throws LibraryItemNotCheckedOutException {
+    public Customer getCheckedOutBy() throws LibraryItemNotCheckedOutException {
         verifyItemIsCheckedOut();
         return checkedOutBy;
     }

@@ -34,11 +34,11 @@ public class LibraryTests {
 
     private Set<Movie> movies;
 
-    private User user;
+    private Customer customer;
 
     @Before
     public void setup() {
-        user = new User("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
+        customer = new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
 
         greatExpectations = new Book("Great Expectations", "Charles Dickens", "1860");
         pickwickPapers = new Book("The Pickwick Papers", "Charles Dickens", "1837");
@@ -79,97 +79,97 @@ public class LibraryTests {
 
     @Test
     public void testCheckoutBookThatExistsAndIsAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItem(greatExpectations, user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
         assertThat(greatExpectations.isCheckedOut(), is(true));
     }
 
     @Test
     public void testCheckoutMovieThatExistsAndIsAvailable() throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        movieLibrary.checkoutItem(pulpFiction, user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
         assertThat(pulpFiction.isCheckedOut(), is(true));
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckoutBookThatExistsButIsUnavailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItem(greatExpectations, user);
-        bookLibrary.checkoutItem(greatExpectations, user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
+        bookLibrary.checkoutItem(greatExpectations, customer);
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckoutMovieThatExistsButIsUnavailable() throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        movieLibrary.checkoutItem(pulpFiction, user);
-        movieLibrary.checkoutItem(pulpFiction, user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
+        movieLibrary.checkoutItem(pulpFiction, customer);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutBookThatDoesNotExist() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItem(bleakHouse, user);
+        bookLibrary.checkoutItem(bleakHouse, customer);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutMovieThatDoesNotExist() throws LibraryItemNotAvailableException, LibraryItemNotFoundException {
-        movieLibrary.checkoutItem(killBill, user);
+        movieLibrary.checkoutItem(killBill, customer);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckoutNullItem() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        movieLibrary.checkoutItem(null, user);
+        movieLibrary.checkoutItem(null, customer);
     }
 
     @Test
     public void testCheckoutBookByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItemByTitle("Great Expectations", user);
+        bookLibrary.checkoutItemByTitle("Great Expectations", customer);
         assertThat(bookLibrary.getItems(), is(Arrays.asList(pickwickPapers)));
     }
 
     @Test
     public void testCheckoutMovieByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        movieLibrary.checkoutItemByTitle("Pulp Fiction", user);
+        movieLibrary.checkoutItemByTitle("Pulp Fiction", customer);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckOutBookByTitleThatDoesntExist() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItemByTitle("Hard Times", user);
+        bookLibrary.checkoutItemByTitle("Hard Times", customer);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
     public void testCheckOutMovieByTitleThatDoesntExist() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        movieLibrary.checkoutItemByTitle("Death Proof", user);
+        movieLibrary.checkoutItemByTitle("Death Proof", customer);
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckOutBookByTitleThatIsntAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItem(greatExpectations, user);
-        bookLibrary.checkoutItemByTitle("Great Expectations", user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
+        bookLibrary.checkoutItemByTitle("Great Expectations", customer);
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckOutMovieByTitleThatIsntAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        movieLibrary.checkoutItem(pulpFiction, user);
-        movieLibrary.checkoutItemByTitle("Pulp Fiction", user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
+        movieLibrary.checkoutItemByTitle("Pulp Fiction", customer);
     }
 
     @Test
     public void testCheckedOutBookDoesNotShowInBookList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        bookLibrary.checkoutItem(greatExpectations, user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
         assertThat(bookLibrary.getItems(), is(Arrays.asList(pickwickPapers)));
     }
 
     @Test
     public void testCheckedOutMovieDoesNotShowInMovieList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        movieLibrary.checkoutItem(pulpFiction, user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
         assertThat(movieLibrary.getItems(), is(Arrays.asList(reservoirDogs)));
     }
 
     @Test
     public void testReturnBookThatExistsAndIsCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        bookLibrary.checkoutItem(greatExpectations, user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
         bookLibrary.returnItem(greatExpectations);
     }
 
     @Test
     public void testReturnMovieThatExistsAndIsCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        movieLibrary.checkoutItem(pulpFiction, user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
         movieLibrary.returnItem(pulpFiction);
         assertThat(pulpFiction.isAvailable(), is(true));
     }
@@ -201,14 +201,14 @@ public class LibraryTests {
 
     @Test
     public void testReturnBookByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        bookLibrary.checkoutItem(greatExpectations, user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
         bookLibrary.returnItemByTitle("Great Expectations");
         assertThat(greatExpectations.isAvailable(), is(true));
     }
 
     @Test
     public void testReturnMovieByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        movieLibrary.checkoutItem(pulpFiction, user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
         movieLibrary.returnItemByTitle("Pulp Fiction");
         assertThat(pulpFiction.isAvailable(), is(true));
     }
@@ -235,14 +235,14 @@ public class LibraryTests {
 
     @Test
     public void testReturnedBookShowsUpInBookList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        bookLibrary.checkoutItem(greatExpectations, user);
+        bookLibrary.checkoutItem(greatExpectations, customer);
         bookLibrary.returnItem(greatExpectations);
         assertThat(bookLibrary.getItems(), is(Arrays.asList(greatExpectations,pickwickPapers)));
     }
 
     @Test
     public void testReturnedMovieShowsUpInMovieList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        movieLibrary.checkoutItem(pulpFiction, user);
+        movieLibrary.checkoutItem(pulpFiction, customer);
         movieLibrary.returnItem(pulpFiction);
         assertThat(movieLibrary.getItems(), is(Arrays.asList(pulpFiction, reservoirDogs)));
     }

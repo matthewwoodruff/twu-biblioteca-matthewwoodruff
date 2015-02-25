@@ -14,11 +14,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class LibraryItemTests {
 
     private LibraryItem item;
-    private User user;
+    private Customer customer;
 
     @Before
     public void setup() {
-        user = new User("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
+        customer = new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
         item = new Book("Great Expectations", "Charles Dickens", "1860");
     }
 
@@ -44,20 +44,20 @@ public class LibraryItemTests {
 
     @Test
     public void testItemCanBeCheckedOut() throws LibraryItemNotAvailableException {
-        item.checkOut(user);
+        item.checkOut(customer);
         assertThat(item.isCheckedOut(), is(true));
         assertThat(item.isAvailable(), is(false));
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckingOutAnUnavailableItemThrowsAnException() throws LibraryItemNotAvailableException {
-        item.checkOut(user);
-        item.checkOut(user);
+        item.checkOut(customer);
+        item.checkOut(customer);
     }
 
     @Test
     public void testItemCanBeCheckedIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        item.checkOut(user);
+        item.checkOut(customer);
         item.checkIn();
         assertThat(item.isCheckedOut(), is(false));
         assertThat(item.isAvailable(), is(true));
@@ -70,13 +70,13 @@ public class LibraryItemTests {
 
     @Test
     public void testCheckingOutAnItemRequiresAUser() throws LibraryItemNotAvailableException {
-        item.checkOut(user);
+        item.checkOut(customer);
     }
 
     @Test
     public void testUserThatCheckedOutAnItemCanBeObtained() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        item.checkOut(user);
-        assertThat(item.getCheckedOutBy(), is(user));
+        item.checkOut(customer);
+        assertThat(item.getCheckedOutBy(), is(customer));
     }
 
     @Test(expected = LibraryItemNotCheckedOutException.class)
@@ -91,7 +91,7 @@ public class LibraryItemTests {
 
     @Test(expected = LibraryItemNotCheckedOutException.class)
     public void testCheckedOutByCannotBeObtainedAfterCheckingIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        item.checkOut(user);
+        item.checkOut(customer);
         item.checkIn();
         item.getCheckedOutBy();
     }
