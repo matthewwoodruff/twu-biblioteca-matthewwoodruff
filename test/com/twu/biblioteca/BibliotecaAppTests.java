@@ -56,7 +56,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testWelcomeMessageOnStartup() throws IOException {
+    public void testDisplayWelcomeMessage() throws IOException {
         app.displayWelcomeMessage(testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
@@ -65,7 +65,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testMainMenuDisplayedAfterWelcomeMessage() throws IOException {
+    public void testMainMenuDisplaysCorrectly() throws IOException {
         app.displayMenuOptions(testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
@@ -79,6 +79,15 @@ public class BibliotecaAppTests {
 
         final Scanner scanner = getTestOutputScanner();
         assertThatBookListIsDisplayedWithAllBooks(scanner);
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testListMoviesListAllMovies() throws IOException {
+        app.listMovies(testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThatMovieListIsDisplayedWithAllMovies(scanner);
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -230,7 +239,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerHasSuccessfulUserExperience() throws IOException {
+    public void testCustomerHasSuccessfulJourneyCheckingABookOutAndIn() throws IOException {
         final List<String> commands = Arrays.asList(
                 "List Books",
                 "Checkout Book: Great Expectations",
@@ -257,6 +266,7 @@ public class BibliotecaAppTests {
     private void assertThatMainMenuIsDisplayed(Scanner scanner) {
         assertThat(scanner.nextLine(), is("Please use one of the following options:"));
         assertThat(scanner.nextLine(), is("List Books"));
+        assertThat(scanner.nextLine(), is("List Movies"));
         assertThat(scanner.nextLine(), is("Checkout Book: <Title>"));
         assertThat(scanner.nextLine(), is("Return Book: <Title>"));
         assertThat(scanner.nextLine(), is("Quit"));
@@ -267,6 +277,13 @@ public class BibliotecaAppTests {
         assertThat(scanner.nextLine(), is("Bleak House, Charles Dickens, 1853"));
         assertThat(scanner.nextLine(), is("Great Expectations, Charles Dickens, 1860"));
         assertThat(scanner.nextLine(), is("The Pickwick Papers, Charles Dickens, 1837"));
+    }
+
+    private void assertThatMovieListIsDisplayedWithAllMovies(Scanner scanner) {
+        assertThat(scanner.nextLine(), is("Title, Director, Year, Rating"));
+        assertThat(scanner.nextLine(), is("Kill Bill, Quentin Tarantino, 2003, Unrated"));
+        assertThat(scanner.nextLine(), is("Pulp Fiction, Quentin Tarantino, 1994, 9"));
+        assertThat(scanner.nextLine(), is("Reservoir Dogs, Quentin Tarantino, 1992, 8"));
     }
 
     private Scanner getTestOutputScanner() {

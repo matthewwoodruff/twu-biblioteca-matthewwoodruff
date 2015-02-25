@@ -90,5 +90,5 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
                 ", checkedOutBy=" + checkedOutBy +
                 '}';
     }
-    
+
 }

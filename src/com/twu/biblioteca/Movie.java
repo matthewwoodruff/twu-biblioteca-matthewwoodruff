@@ -68,9 +68,9 @@ public final class Movie extends LibraryItem<Movie> {
 
     protected static Set<Movie> getDefaultMovies() {
         final Set<Movie> movies = new HashSet<Movie>();
-        movies.add(Movie.createRatedMovie("Pulp Fiction", "Quentin Tarantino", "1994", 9));
-        movies.add(Movie.createRatedMovie("Reservoir Dogs", "Quentin Tarantino", "1992", 8));
-        movies.add(Movie.createUnratedMovie("Kill Bill", "Quentin Tarantino", "2003"));
+        movies.add(Movie.createRatedMovie("Pulp Fiction", "1994", "Quentin Tarantino", 9));
+        movies.add(Movie.createRatedMovie("Reservoir Dogs", "1992", "Quentin Tarantino", 8));
+        movies.add(Movie.createUnratedMovie("Kill Bill", "2003", "Quentin Tarantino"));
         return movies;
     }
 

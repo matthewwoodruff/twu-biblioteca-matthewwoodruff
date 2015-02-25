@@ -13,11 +13,13 @@ public final class BibliotecaApp {
 
     private final Scanner scanner;
     private final OutputStream outputStream;
-    private final Library<Book> library;
+    private final Library<Book> bookLibrary;
+    private final Library<Movie> movieLibrary;
 
     private final Customer customer = new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
 
     private static final String LIST_BOOKS_OPTION = "List Books";
+    private static final String LIST_MOVIES_OPTION = "List Movies";
     private static final String CHECKOUT_BOOK_OPTION = "Checkout Book: <Title>";
     private static final String CHECKOUT_BOOK_COMMAND = "Checkout Book";
     private static final String RETURN_BOOK_OPTION = "Return Book: <Title>";
@@ -29,7 +31,8 @@ public final class BibliotecaApp {
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
         this.scanner = scanner;
         this.outputStream = outputStream;
-        library = new Library<Book>(Book.getDefaultBooks());
+        bookLibrary = new Library<Book>(Book.getDefaultBooks());
+        movieLibrary = new Library<Movie>(Movie.getDefaultMovies());
     }
 
     public void run() throws IOException, BibliotecaAppQuitException {
@@ -47,6 +50,7 @@ public final class BibliotecaApp {
     protected void displayMenuOptions(OutputStream outputStream) throws IOException {
         writeLine("Please use one of the following options:", outputStream);
         writeLine(LIST_BOOKS_OPTION, outputStream);
+        writeLine(LIST_MOVIES_OPTION, outputStream);
         writeLine(CHECKOUT_BOOK_OPTION, outputStream);
         writeLine(RETURN_BOOK_OPTION, outputStream);
         writeLine(QUIT_OPTION, outputStream);
@@ -72,13 +76,19 @@ public final class BibliotecaApp {
 
     protected void listBooks(OutputStream outputStream) throws IOException {
         writeLine("Title, Author, Year", outputStream);
-        for( Book book : library.getItems())
+        for(final Book book : bookLibrary.getItems())
             writeLine(book.getTitle() + ", " + book.getAuthor() + ", " + book.getYear(), outputStream);
+    }
+
+    public void listMovies(OutputStream outputStream) throws IOException {
+        writeLine("Title, Director, Year, Rating", outputStream);
+        for(final Movie movie : movieLibrary.getItems())
+            writeLine(movie.getTitle() + ", " + movie.getDirector() + ", " + movie.getYear() + ", " + (movie.getRating() == null ? "Unrated" : new Integer(movie.getRating()).toString()), outputStream);
     }
 
     protected void checkoutBook(String title, OutputStream outputStream) throws IOException {
         try {
-            library.checkoutItemByTitle(title, customer);
+            bookLibrary.checkoutItemByTitle(title, customer);
             writeLine("Thank you! Enjoy the book.", outputStream);
         } catch (LibraryItemNotFoundException e) {
             writeLine("That book is not available.", outputStream);
@@ -89,7 +99,7 @@ public final class BibliotecaApp {
 
     protected void returnBook(String title, OutputStream outputStream) throws IOException {
         try {
-            library.returnItemByTitle(title);
+            bookLibrary.returnItemByTitle(title);
             writeLine("Thank you for returning the book.", outputStream);
         } catch (LibraryItemNotCheckedOutException e) {
             writeLine("That is not a valid book to return.", outputStream);
