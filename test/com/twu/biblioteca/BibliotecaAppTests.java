@@ -119,15 +119,6 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testListMoviesListAllMovies() throws IOException {
-        app.listItems(movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThatMovieListIsDisplayedWithAllMovies(scanner);
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
     public void testInvalidMenuOptionMessage() throws Exception {
         app.selectMenuOption("Invalid Option");
 
@@ -151,15 +142,6 @@ public class BibliotecaAppTests {
 
         final Scanner scanner = getOutputScanner();
         assertThatBookListIsDisplayedWithAllBooks(scanner);
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
-    public void testCustomerSelectsListMoviesOption() throws Exception {
-        app.selectMenuOption("List Movies");
-
-        final Scanner scanner = getOutputScanner();
-        assertThatMovieListIsDisplayedWithAllMovies(scanner);
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -196,16 +178,6 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutAMovieSuccessfully() throws IOException, InvalidCredentialsException {
-        login();
-        app.checkoutItem("Pulp Fiction", movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you! Enjoy the movie."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
     public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException {
         login();
         app.checkoutItem("Great Expectations", bookLibrary, outputStream);
@@ -217,31 +189,11 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutAnUnavailableMovie() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException {
-        login();
-        app.checkoutItem("Pulp Fiction", movieLibrary, outputStream);
-        app.checkoutItem("Pulp Fiction", movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThat(scanner.nextLine(), is("That movie is not available."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
     public void testCustomerChecksOutANonExistingBook() throws IOException {
         app.checkoutItem("Hard Times", bookLibrary, testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
         assertThat(scanner.nextLine(), is("That book is not available."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
-    public void testCustomerChecksOutANonExistingMovie() throws IOException {
-        app.checkoutItem("Django Unchained", movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThat(scanner.nextLine(), is("That movie is not available."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -259,36 +211,12 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCheckedOutMovieDoesNotAppearInMovieList() throws Exception {
-        login();
-        app.checkoutItem("Pulp Fiction", movieLibrary, testOutputStream);
-        app.selectMenuOption("List Movies");
-
-        final Scanner scanner = getOutputScanner();
-
-        assertThat(scanner.nextLine(), is("Title, Director, Year, Rating"));
-        assertThat(scanner.nextLine(), is("Kill Bill, Quentin Tarantino, 2003, Unrated"));
-        assertThat(scanner.nextLine(), is("Reservoir Dogs, Quentin Tarantino, 1992, 8"));
-        assertThat(scanner.hasNext(), is(false));
-    }
-
-    @Test
     public void testCustomerSelectsCheckOutBookOptionSuccessfully() throws Exception {
         login();
         app.selectMenuOption("Checkout Book: Great Expectations");
 
         final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you! Enjoy the book."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
-    public void testCustomerSelectsCheckOutMovieOptionSuccessfully() throws Exception {
-        login();
-        app.selectMenuOption("Checkout Movie: Pulp Fiction");
-
-        final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you! Enjoy the movie."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -304,17 +232,6 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerReturnsAMovieSuccessfully() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException {
-        login();
-        app.checkoutItem("Pulp Fiction", movieLibrary, outputStream);
-        app.returnItem("Pulp Fiction", movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you for returning the movie."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
     public void testCustomerReturnsABookThatHasntBeenCheckedOut() throws IOException {
         app.returnItem("Great Expectations", bookLibrary, testOutputStream);
 
@@ -324,29 +241,11 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerReturnsAMovieThatHasntBeenCheckedOut() throws IOException {
-        app.returnItem("Pulp Fiction", movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThat(scanner.nextLine(), is("That is not a valid movie to return."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
     public void testCustomerReturnsABookThatDoesntExist() throws IOException {
         app.returnItem("Hard Times", bookLibrary, testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
         assertThat(scanner.nextLine(), is("That is not a valid book to return."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
-    public void testCustomerReturnsAMovieThatDoesntExist() throws IOException {
-        app.returnItem("Django Unchained", movieLibrary, testOutputStream);
-
-        final Scanner scanner = getTestOutputScanner();
-        assertThat(scanner.nextLine(), is("That is not a valid movie to return."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -364,18 +263,6 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testReturnedMovieAppearsInMovieList() throws Exception {
-        login();
-        app.checkoutItem("Pulp Fiction", movieLibrary, testOutputStream);
-        app.returnItem("Pulp Fiction", movieLibrary, testOutputStream);
-        app.selectMenuOption("List Movies");
-
-        final Scanner scanner = getOutputScanner();
-        assertThatMovieListIsDisplayedWithAllMovies(scanner);
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
     public void testCustomerSelectsReturnBookOptionSuccessfully() throws Exception {
         login();
         app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
@@ -383,17 +270,6 @@ public class BibliotecaAppTests {
 
         final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you for returning the book."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
-
-    @Test
-    public void testCustomerSelectsReturnMovieOptionSuccessfully() throws Exception {
-        login();
-        app.checkoutItem("Pulp Fiction", movieLibrary, testOutputStream);
-        app.selectMenuOption("Return Movie: Pulp Fiction");
-
-        final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you for returning the movie."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
