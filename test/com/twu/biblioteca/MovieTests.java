@@ -22,16 +22,6 @@ public class MovieTests {
     }
 
     @Test
-    public void testMovieHasATitle() {
-        assertThat(pulpFiction.getTitle(), is("Pulp Fiction"));
-    }
-
-    @Test
-    public void testMovieHasAYear() {
-        assertThat(pulpFiction.getYear(), is("1994"));
-    }
-
-    @Test
     public void testMovieHasADirector() {
         assertThat(pulpFiction.getDirector(), is("Quentin Tarantino"));
     }
@@ -96,42 +86,6 @@ public class MovieTests {
     public void testCreateRatedMovie() {
         final Movie movie = Movie.createRatedMovie("Pulp Fiction", "1994", "Quentin Tarantino", 9);
         assertThat(movie.getRating(), is(9));
-    }
-
-    @Test
-    public void testMovieHasCheckedOutIndication() {
-        assertThat(pulpFiction.isCheckedOut(), is(false));
-    }
-
-    @Test
-    public void testMovieHasAvailableIndication() {
-        assertThat(pulpFiction.isAvailable(), is(true));
-    }
-
-    @Test
-    public void testMovieCanBeCheckedOut() throws LibraryItemNotAvailableException {
-        pulpFiction.checkOut();
-        assertThat(pulpFiction.isCheckedOut(), is(true));
-        assertThat(pulpFiction.isAvailable(), is(false));
-    }
-
-    @Test(expected = LibraryItemNotAvailableException.class)
-    public void testCheckingOutAnUnavailableMovieThrowsAnException() throws LibraryItemNotAvailableException {
-        pulpFiction.checkOut();
-        pulpFiction.checkOut();
-    }
-
-    @Test
-    public void testMovieCanBeCheckedIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        pulpFiction.checkOut();
-        pulpFiction.checkIn();
-        assertThat(pulpFiction.isCheckedOut(), is(false));
-        assertThat(pulpFiction.isAvailable(), is(true));
-    }
-
-    @Test(expected = LibraryItemNotCheckedOutException.class)
-    public void testCheckingInAMovieThatHasntBeenCheckedOutThrowsAnException() throws LibraryItemNotCheckedOutException {
-        pulpFiction.checkIn();
     }
 
     @Test

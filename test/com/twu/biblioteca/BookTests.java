@@ -21,52 +21,8 @@ public class BookTests {
     }
 
     @Test
-    public void testBookHasTitle() {
-        assertThat(book.getTitle(), is("Great Expectations"));
-    }
-
-    @Test
     public void testBookHasAuthor() {
         assertThat(book.getAuthor(), is("Charles Dickens"));
-    }
-
-    @Test
-    public void testBookHasYear() {
-        assertThat(book.getYear(), is("1860"));
-    }
-
-    @Test
-    public void testBookHasCheckedOutIndication() {
-        assertThat(book.isCheckedOut(), is(false));
-    }
-
-    @Test
-    public void testBookHasAvailableIndication() {
-        assertThat(book.isAvailable(), is(true));
-    }
-
-    @Test
-    public void testBookCanBeCheckedOut() throws LibraryItemNotAvailableException {
-        book.checkOut();
-        assertThat(book.isCheckedOut(), is(true));
-    }
-
-    @Test(expected = LibraryItemNotAvailableException.class)
-    public void testCheckingOutAnUnavailableBookThrowsAnException() throws LibraryItemNotAvailableException {
-        book.checkOut();
-        book.checkOut();
-    }
-
-    @Test
-    public void testBookCanBeCheckedIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
-        book.checkOut();
-        book.checkIn();
-        assertThat(book.isCheckedOut(), is(false));
-    }
-
-    @Test(expected = LibraryItemNotCheckedOutException.class)
-    public void testCheckingInABookThatHasntBeenCheckedOutThrowsAnException() throws LibraryItemNotCheckedOutException {
-        book.checkIn();
     }
 
     @Test(expected = IllegalArgumentException.class)
