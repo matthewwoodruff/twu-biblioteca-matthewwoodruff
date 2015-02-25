@@ -118,15 +118,24 @@ public class BibliotecaAppTests {
         assertThat(scanner.hasNextLine(), is(false));
     }
 
+    @Test
+    public void testCustomerSelectsListMoviesOption() throws IOException, BibliotecaAppQuitException {
+        app.selectMenuOption("List Movies", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThatMovieListIsDisplayedWithAllMovies(scanner);
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
     @Test(expected = BibliotecaAppQuitException.class)
     public void testQuitThrowsException() throws BibliotecaAppQuitException, IOException {
-        app.quit(testOutputStream);
+        BibliotecaApp.quit(testOutputStream);
     }
 
     @Test
     public void testQuitShowsLeavingMessage() throws BibliotecaAppQuitException, IOException {
         try {
-            app.quit(testOutputStream);
+            BibliotecaApp.quit(testOutputStream);
             fail();
         } catch (BibliotecaAppQuitException e) {}
 
@@ -150,6 +159,15 @@ public class BibliotecaAppTests {
     }
 
     @Test
+    public void testCustomerChecksOutAMovieSuccessfully() throws IOException {
+        app.checkoutMovie("Pulp Fiction", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("Thank you! Enjoy the movie."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
     public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException {
         app.checkoutBook("Great Expectations", outputStream);
         app.checkoutBook("Great Expectations", testOutputStream);
@@ -160,11 +178,30 @@ public class BibliotecaAppTests {
     }
 
     @Test
+    public void testCustomerChecksOutAnUnavailableMovie() throws LibraryItemNotFoundException, IOException {
+        app.checkoutMovie("Pulp Fiction", outputStream);
+        app.checkoutMovie("Pulp Fiction", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("That movie is not available."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
     public void testCustomerChecksOutANonExistingBook() throws IOException {
         app.checkoutBook("Hard Times", testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
         assertThat(scanner.nextLine(), is("That book is not available."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testCustomerChecksOutANonExistingMovie() throws IOException {
+        app.checkoutMovie("Django Unchained", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("That movie is not available."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -181,11 +218,33 @@ public class BibliotecaAppTests {
     }
 
     @Test
+    public void testCheckedOutMovieDoesNotAppearInMovieList() throws LibraryItemNotFoundException, IOException, BibliotecaAppQuitException {
+        app.checkoutMovie("Pulp Fiction", outputStream);
+        app.selectMenuOption("List Movies", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+
+        assertThat(scanner.nextLine(), is("Title, Director, Year, Rating"));
+        assertThat(scanner.nextLine(), is("Kill Bill, Quentin Tarantino, 2003, Unrated"));
+        assertThat(scanner.nextLine(), is("Reservoir Dogs, Quentin Tarantino, 1992, 8"));
+        assertThat(scanner.hasNext(), is(false));
+    }
+
+    @Test
     public void testCustomerSelectsCheckOutBookOptionSuccessfully() throws IOException, BibliotecaAppQuitException {
         app.selectMenuOption("Checkout Book: Great Expectations", testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you! Enjoy the book."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testCustomerSelectsCheckOutMovieOptionSuccessfully() throws IOException, BibliotecaAppQuitException {
+        app.selectMenuOption("Checkout Movie: Pulp Fiction", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("Thank you! Enjoy the movie."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -200,6 +259,16 @@ public class BibliotecaAppTests {
     }
 
     @Test
+    public void testCustomerReturnsAMovieSuccessfully() throws LibraryItemNotFoundException, IOException {
+        app.checkoutMovie("Pulp Fiction", outputStream);
+        app.returnMovie("Pulp Fiction", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("Thank you for returning the movie."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
     public void testCustomerReturnsABookThatHasntBeenCheckedOut() throws IOException {
         app.returnBook("Great Expectations", testOutputStream);
 
@@ -209,11 +278,29 @@ public class BibliotecaAppTests {
     }
 
     @Test
+    public void testCustomerReturnsAMovieThatHasntBeenCheckedOut() throws IOException {
+        app.returnMovie("Pulp Fiction", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("That is not a valid movie to return."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
     public void testCustomerReturnsABookThatDoesntExist() throws IOException {
         app.returnBook("Hard Times", testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
         assertThat(scanner.nextLine(), is("That is not a valid book to return."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testCustomerReturnsAMovieThatDoesntExist() throws IOException {
+        app.returnMovie("Django Unchained", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("That is not a valid movie to return."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -229,12 +316,33 @@ public class BibliotecaAppTests {
     }
 
     @Test
+    public void testReturnedMovieAppearsInMovieList() throws IOException, LibraryItemNotFoundException, BibliotecaAppQuitException {
+        app.checkoutMovie("Pulp Fiction", outputStream);
+        app.returnMovie("Pulp Fiction", outputStream);
+        app.selectMenuOption("List Movies", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThatMovieListIsDisplayedWithAllMovies(scanner);
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
     public void testCustomerSelectsReturnBookOptionSuccessfully() throws IOException, BibliotecaAppQuitException {
         app.checkoutBook("Great Expectations", outputStream);
         app.selectMenuOption("Return Book: Great Expectations", testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you for returning the book."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testCustomerSelectsReturnMovieOptionSuccessfully() throws IOException, BibliotecaAppQuitException {
+        app.checkoutMovie("Pulp Fiction", outputStream);
+        app.selectMenuOption("Return Movie: Pulp Fiction", testOutputStream);
+
+        final Scanner scanner = getTestOutputScanner();
+        assertThat(scanner.nextLine(), is("Thank you for returning the movie."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
@@ -268,7 +376,9 @@ public class BibliotecaAppTests {
         assertThat(scanner.nextLine(), is("List Books"));
         assertThat(scanner.nextLine(), is("List Movies"));
         assertThat(scanner.nextLine(), is("Checkout Book: <Title>"));
+        assertThat(scanner.nextLine(), is("Checkout Movie: <Title>"));
         assertThat(scanner.nextLine(), is("Return Book: <Title>"));
+        assertThat(scanner.nextLine(), is("Return Movie: <Title>"));
         assertThat(scanner.nextLine(), is("Quit"));
     }
 

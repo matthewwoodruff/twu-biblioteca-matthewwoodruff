@@ -91,4 +91,6 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
                 '}';
     }
 
+    public abstract String getCSVRepresentation();
+
 }

@@ -95,4 +95,15 @@ public class MovieTests {
         assertThat(pulpFiction.hashCode(), is(movie.hashCode()));
     }
 
+    @Test
+    public void testMovieHasCSVRepresentation() {
+        assertThat(pulpFiction.getCSVRepresentation(), is("Pulp Fiction, Quentin Tarantino, 1994, 9"));
+    }
+
+    @Test
+    public void testUnratedMovieHasCSVRepresentation() {
+        final Movie unratedMovie = Movie.createUnratedMovie("Kill Bill", "2003", "Quentin Tarantino");
+        assertThat(unratedMovie.getCSVRepresentation(), is("Kill Bill, Quentin Tarantino, 2003, Unrated"));
+    }
+
 }

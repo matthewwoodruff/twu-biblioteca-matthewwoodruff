@@ -47,6 +47,15 @@ public final class Book extends LibraryItem<Book> {
                 "} " + super.toString();
     }
 
+    @Override
+    public String getCSVRepresentation() {
+        return getTitle() + ", " + author + ", " + getYear();
+    }
+
+    public static String getCSVHeaders() {
+        return "Title, Author, Year";
+    }
+
     protected static Set<Book> getDefaultBooks() {
         final Set<Book> books = new HashSet<Book>();
         books.add(new Book("Great Expectations", "Charles Dickens", "1860"));

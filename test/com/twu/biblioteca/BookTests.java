@@ -62,4 +62,9 @@ public class BookTests {
         assertThat(book.hashCode(), is(book.hashCode()));
     }
 
+    @Test
+    public void testBookHasCSVRepresentation() {
+        assertThat(book.getCSVRepresentation(), is("Great Expectations, Charles Dickens, 1860"));
+    }
+
 }

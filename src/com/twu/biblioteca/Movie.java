@@ -66,6 +66,15 @@ public final class Movie extends LibraryItem<Movie> {
                 "} " + super.toString();
     }
 
+    @Override
+    public String getCSVRepresentation() {
+        return getTitle() + ", " + director + ", " + getYear() + ", " + (rating == null ? "Unrated" : rating);
+    }
+
+    public static String getCSVHeaders() {
+        return "Title, Director, Year, Rating";
+    }
+
     protected static Set<Movie> getDefaultMovies() {
         final Set<Movie> movies = new HashSet<Movie>();
         movies.add(Movie.createRatedMovie("Pulp Fiction", "1994", "Quentin Tarantino", 9));

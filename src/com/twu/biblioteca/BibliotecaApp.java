@@ -24,6 +24,10 @@ public final class BibliotecaApp {
     private static final String CHECKOUT_BOOK_COMMAND = "Checkout Book";
     private static final String RETURN_BOOK_OPTION = "Return Book: <Title>";
     private static final String RETURN_BOOK_COMMAND = "Return Book";
+    private static final String CHECKOUT_MOVIE_OPTION = "Checkout Movie: <Title>";
+    private static final String CHECKOUT_MOVIE_COMMAND = "Checkout Movie";
+    private static final String RETURN_MOVIE_OPTION = "Return Movie: <Title>";
+    private static final String RETURN_MOVIE_COMMAND = "Return Movie";
     private static final String QUIT_OPTION = "Quit";
 
     public BibliotecaApp(Scanner scanner, OutputStream outputStream) {
@@ -52,7 +56,9 @@ public final class BibliotecaApp {
         writeLine(LIST_BOOKS_OPTION, outputStream);
         writeLine(LIST_MOVIES_OPTION, outputStream);
         writeLine(CHECKOUT_BOOK_OPTION, outputStream);
+        writeLine(CHECKOUT_MOVIE_OPTION, outputStream);
         writeLine(RETURN_BOOK_OPTION, outputStream);
+        writeLine(RETURN_MOVIE_OPTION, outputStream);
         writeLine(QUIT_OPTION, outputStream);
     }
 
@@ -64,60 +70,84 @@ public final class BibliotecaApp {
 
         if (LIST_BOOKS_OPTION.equals(command))
             listBooks(outputStream);
+        else if (LIST_MOVIES_OPTION.equals(command))
+            listMovies(outputStream);
         else if (QUIT_OPTION.equals(command))
             quit(outputStream);
         else if (CHECKOUT_BOOK_COMMAND.equals(command) && input.length == 2)
             checkoutBook(input[1].trim(), outputStream);
+        else if (CHECKOUT_MOVIE_COMMAND.equals(command) && input.length == 2)
+            checkoutMovie(input[1].trim(), outputStream);
         else if (RETURN_BOOK_COMMAND.equals(command) && input.length == 2)
             returnBook(input[1].trim(), outputStream);
+        else if (RETURN_MOVIE_COMMAND.equals(command) && input.length == 2)
+            returnMovie(input[1].trim(), outputStream);
         else
             writeLine("Select a valid option!", outputStream);
     }
 
     protected void listBooks(OutputStream outputStream) throws IOException {
-        writeLine("Title, Author, Year", outputStream);
-        for(final Book book : bookLibrary.getItems())
-            writeLine(book.getTitle() + ", " + book.getAuthor() + ", " + book.getYear(), outputStream);
+        listItems(bookLibrary, Book.getCSVHeaders(), outputStream);
     }
 
     public void listMovies(OutputStream outputStream) throws IOException {
-        writeLine("Title, Director, Year, Rating", outputStream);
-        for(final Movie movie : movieLibrary.getItems())
-            writeLine(movie.getTitle() + ", " + movie.getDirector() + ", " + movie.getYear() + ", " + (movie.getRating() == null ? "Unrated" : new Integer(movie.getRating()).toString()), outputStream);
+        listItems(movieLibrary, Movie.getCSVHeaders(), outputStream);
+    }
+
+    private static void listItems(Library<?> library, String csvHeader, OutputStream outputStream) throws IOException {
+        writeLine(csvHeader, outputStream);
+        for(final LibraryItem<?> item : library.getItems())
+            writeLine(item.getCSVRepresentation(), outputStream);
     }
 
     protected void checkoutBook(String title, OutputStream outputStream) throws IOException {
+        checkoutItem(title, bookLibrary, "book", outputStream);
+    }
+
+    protected void checkoutMovie(String title, OutputStream outputStream) throws IOException {
+        checkoutItem(title, movieLibrary, "movie", outputStream);
+    }
+
+    private void checkoutItem(String title, Library library, String itemName, OutputStream outputStream) throws IOException {
         try {
-            bookLibrary.checkoutItemByTitle(title, customer);
-            writeLine("Thank you! Enjoy the book.", outputStream);
+            library.checkoutItemByTitle(title, customer);
+            writeLine("Thank you! Enjoy the " + itemName + ".", outputStream);
         } catch (LibraryItemNotFoundException e) {
-            writeLine("That book is not available.", outputStream);
+            writeLine("That " + itemName + " is not available.", outputStream);
         } catch (LibraryItemNotAvailableException e) {
-            writeLine("That book is not available.", outputStream);
+            writeLine("That " + itemName + " is not available.", outputStream);
         }
     }
 
     protected void returnBook(String title, OutputStream outputStream) throws IOException {
+        returnItem(title, bookLibrary, "book", outputStream);
+    }
+
+    protected void returnMovie(String title, OutputStream outputStream) throws IOException {
+        returnItem(title, movieLibrary, "movie", outputStream);
+    }
+
+    private void returnItem(String title, Library library, String itemName, OutputStream outputStream) throws IOException {
         try {
-            bookLibrary.returnItemByTitle(title);
-            writeLine("Thank you for returning the book.", outputStream);
+            library.returnItemByTitle(title);
+            writeLine("Thank you for returning the " + itemName + ".", outputStream);
         } catch (LibraryItemNotCheckedOutException e) {
-            writeLine("That is not a valid book to return.", outputStream);
+            writeLine("That is not a valid " + itemName + " to return.", outputStream);
         } catch (LibraryItemNotFoundException e) {
-            writeLine("That is not a valid book to return.", outputStream);
+            writeLine("That is not a valid " + itemName + " to return.", outputStream);
         }
     }
 
-    protected void quit(OutputStream outputStream) throws BibliotecaAppQuitException, IOException {
+    protected static void quit(OutputStream outputStream) throws BibliotecaAppQuitException, IOException {
         writeLine("Thank you for using Biblioteca App!", outputStream);
         throw new BibliotecaAppQuitException();
     }
 
-    private void writeLine(String text, OutputStream outputStream) throws IOException {
+    private static void writeLine(String text, OutputStream outputStream) throws IOException {
         outputStream.write((text + "\n").getBytes());
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void mLain(String[] args) throws IOException {
         final BibliotecaApp app = new BibliotecaApp(new Scanner(System.in), System.out);
         try {
             app.run();
