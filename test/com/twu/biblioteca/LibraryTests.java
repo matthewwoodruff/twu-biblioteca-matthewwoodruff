@@ -36,17 +36,17 @@ public class LibraryTests {
 
     @Before
     public void setup() {
-        greatExpectations = new Book(1, "Great Expectations", "Charles Dickens", "1860");
-        pickwickPapers = new Book(2, "The Pickwick Papers", "Charles Dickens", "1837");
-        bleakHouse = new Book(3, "Bleak House", "Charles Dickens", "1853");
+        greatExpectations = new Book("Great Expectations", "Charles Dickens", "1860");
+        pickwickPapers = new Book("The Pickwick Papers", "Charles Dickens", "1837");
+        bleakHouse = new Book("Bleak House", "Charles Dickens", "1853");
         books = new HashSet<Book>();
         books.add(greatExpectations);
         books.add(pickwickPapers);
         bookLibrary = new Library<Book>(books);
 
-        pulpFiction = Movie.createRatedMovie(1, "Pulp Fiction", "Quentin Tarantino", "1994", 9);
-        reservoirDogs = Movie.createRatedMovie(1, "Reservior Dogs", "Quentin Tarantino", "1992", 8);
-        killBill = Movie.createUnratedMovie(1, "Kill Bill", "Quentin Tarantino", "2003");
+        pulpFiction = Movie.createRatedMovie("Pulp Fiction", "Quentin Tarantino", "1994", 9);
+        reservoirDogs = Movie.createRatedMovie("Reservior Dogs", "Quentin Tarantino", "1992", 8);
+        killBill = Movie.createUnratedMovie("Kill Bill", "Quentin Tarantino", "2003");
         movies = new HashSet<Movie>();
         movies.add(pulpFiction);
         movies.add(reservoirDogs);

@@ -11,12 +11,13 @@ import java.util.*;
  */
 public class Library<T extends LibraryItem> {
 
-    private final SortedSet<T> items = new TreeSet<T>();
+    private final List<T> items = new ArrayList<T>();
     private final Map<String, T> itemsTitleMap = new HashMap<String, T>();
 
     public Library(Set<T> items) {
         if (items == null) throw new IllegalArgumentException("items cannot be null");
         this.items.addAll(items);
+        Collections.sort(this.items);
         for(final T item : items)
             itemsTitleMap.put(item.getTitle(), item);
     }
@@ -47,12 +48,13 @@ public class Library<T extends LibraryItem> {
     }
 
     private void verifyItemExists(T item) throws LibraryItemNotFoundException {
-        if(item == null || !items.contains(item)) throw new LibraryItemNotFoundException();
+        if(item == null || !items.contains(item))
+            throw new LibraryItemNotFoundException();
     }
 
     public void checkoutItem(T item) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
         verifyItemExists(item);
         item.checkOut();
     }
-    
+
 }

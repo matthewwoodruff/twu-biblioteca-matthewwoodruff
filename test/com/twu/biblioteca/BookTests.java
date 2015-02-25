@@ -17,7 +17,7 @@ public class BookTests {
 
     @Before
     public void setup() {
-        book = new Book(1, "Great Expectations", "Charles Dickens", "1860");
+        book = new Book("Great Expectations", "Charles Dickens", "1860");
     }
 
     @Test
@@ -33,11 +33,6 @@ public class BookTests {
     @Test
     public void testBookHasYear() {
         assertThat(book.getYear(), is("1860"));
-    }
-
-    @Test
-    public void testBookHasId() {
-        assertThat(book.getId(), is(1));
     }
 
     @Test
@@ -76,37 +71,37 @@ public class BookTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void testBookConstructorDisallowsNullTitle() {
-        new Book(1, null, "Charles Dickens", "1860");
+        new Book(null, "Charles Dickens", "1860");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBookConstructorDisallowsEmptyTitle() {
-        new Book(1, "", "Charles Dickens", "1860");
+        new Book("", "Charles Dickens", "1860");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBookConstructorDisallowsNullAuthor() {
-        new Book(1, "Great Expectations", null, "1860");
+        new Book("Great Expectations", null, "1860");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBookConstructorDisallowsEmptyAuthor() {
-        new Book(1, "Great Expectations", "", "1860");
+        new Book("Great Expectations", "", "1860");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBookConstructorDisallowsNullYear() {
-        new Book(1, "Great Expectations", "Charles Dickens", null);
+        new Book("Great Expectations", "Charles Dickens", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBookConstructorDisallowsEmptyYear() {
-        new Book(1, "Great Expectations", "Charles Dickens", "");
+        new Book("Great Expectations", "Charles Dickens", "");
     }
 
     @Test
     public void testBookEquality() {
-        final Book book = new Book(1, "Great Expectations", "Charles Dickens", "1860");
+        final Book book = new Book("Great Expectations", "Charles Dickens", "1860");
         assertThat(book, is(book));
         assertThat(book.hashCode(), is(book.hashCode()));
     }

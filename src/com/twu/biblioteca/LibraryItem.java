@@ -8,15 +8,13 @@ import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
  */
 public abstract class LibraryItem implements Comparable<LibraryItem> {
 
-    private final int id;
     private final String title;
     private final String year;
     private boolean checkedOut = false;
 
-    protected LibraryItem(int id, String title, String year) {
+    protected LibraryItem(String title, String year) {
         if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
         if(year == null || year.isEmpty()) throw new IllegalArgumentException("year cannot be null or empty");
-        this.id = id;
         this.title = title;
         this.year = year;
     }
@@ -27,10 +25,6 @@ public abstract class LibraryItem implements Comparable<LibraryItem> {
 
     public String getYear() {
         return year;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public boolean isCheckedOut() {
@@ -64,7 +58,6 @@ public abstract class LibraryItem implements Comparable<LibraryItem> {
         LibraryItem that = (LibraryItem) o;
 
         if (checkedOut != that.checkedOut) return false;
-        if (id != that.id) return false;
         if (!title.equals(that.title)) return false;
         if (!year.equals(that.year)) return false;
 
@@ -73,7 +66,7 @@ public abstract class LibraryItem implements Comparable<LibraryItem> {
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = 1;
         result = 31 * result + title.hashCode();
         result = 31 * result + year.hashCode();
         result = 31 * result + (checkedOut ? 1 : 0);
@@ -83,8 +76,7 @@ public abstract class LibraryItem implements Comparable<LibraryItem> {
     @Override
     public String toString() {
         return "LibraryItem{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
+                "title='" + title + '\'' +
                 ", year='" + year + '\'' +
                 ", checkedOut=" + checkedOut +
                 '}';

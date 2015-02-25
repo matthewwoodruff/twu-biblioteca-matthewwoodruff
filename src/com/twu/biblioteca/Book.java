@@ -1,7 +1,7 @@
 package com.twu.biblioteca;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Matt on 23/02/15.
@@ -10,8 +10,8 @@ public final class Book extends LibraryItem {
 
     private final String author;
 
-    public Book(int id, String title, String author, String year) {
-        super(id, title, year);
+    public Book(String title, String author, String year) {
+        super(title, year);
         if(author == null || author.isEmpty()) throw new IllegalArgumentException("author cannot be null or empty");
         this.author = author;
     }
@@ -47,11 +47,11 @@ public final class Book extends LibraryItem {
                 '}';
     }
 
-    protected static SortedSet<Book> getDefaultBooks() {
-        final SortedSet<Book> books = new TreeSet<Book>();
-        books.add(new Book(1, "Great Expectations", "Charles Dickens", "1860"));
-        books.add(new Book(2, "The Pickwick Papers", "Charles Dickens", "1837"));
-        books.add(new Book(3, "Bleak House", "Charles Dickens", "1853"));
+    protected static Set<Book> getDefaultBooks() {
+        final Set<Book> books = new HashSet<Book>();
+        books.add(new Book("Great Expectations", "Charles Dickens", "1860"));
+        books.add(new Book("The Pickwick Papers", "Charles Dickens", "1837"));
+        books.add(new Book("Bleak House", "Charles Dickens", "1853"));
         return books;
     }
 
