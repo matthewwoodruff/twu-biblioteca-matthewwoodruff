@@ -1,50 +1,66 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
-import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
-import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
-import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
+import com.twu.biblioteca.exceptions.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Scanner;
+import java.util.*;
 
 public final class BibliotecaApp {
 
     private final Scanner scanner;
     private final OutputStream outputStream;
-    private final Library<Book> bookLibrary;
-    private final Library<Movie> movieLibrary;
+    private final Menu<BibliotecaApp> loggedInMenu;
+    private final Menu<BibliotecaApp> loggedOutMenu;
 
-    private final Customer customer = new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
+    private Customer customer;
 
-    private static final String LIST_BOOKS_OPTION = "List Books";
-    private static final String LIST_MOVIES_OPTION = "List Movies";
-    private static final String CHECKOUT_BOOK_OPTION = "Checkout Book: <Title>";
-    private static final String CHECKOUT_BOOK_COMMAND = "Checkout Book";
-    private static final String RETURN_BOOK_OPTION = "Return Book: <Title>";
-    private static final String RETURN_BOOK_COMMAND = "Return Book";
-    private static final String CHECKOUT_MOVIE_OPTION = "Checkout Movie: <Title>";
-    private static final String CHECKOUT_MOVIE_COMMAND = "Checkout Movie";
-    private static final String RETURN_MOVIE_OPTION = "Return Movie: <Title>";
-    private static final String RETURN_MOVIE_COMMAND = "Return Movie";
-    private static final String QUIT_OPTION = "Quit";
+    private Map<String, Customer> customers = new HashMap<>();
 
-    public BibliotecaApp(Scanner scanner, OutputStream outputStream) {
+    public BibliotecaApp(Scanner scanner, OutputStream outputStream, Set<Customer> customers, Library<?>... libraries) {
         if (scanner == null) throw new IllegalArgumentException("scanner cannot be null");
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
         this.scanner = scanner;
         this.outputStream = outputStream;
-        bookLibrary = new Library<Book>(Book.getDefaultBooks());
-        movieLibrary = new Library<Movie>(Movie.getDefaultMovies());
+
+        for(final Customer customer : customers)
+            this.customers.put(customer.getLibraryNumber(), customer);
+
+        final List<MenuOption<BibliotecaApp>> loggedInOptions = new ArrayList<>();
+        final List<MenuOption<BibliotecaApp>> loggedOutOptions = new ArrayList<>();
+        loggedOutOptions.add(new LoginOption());
+        for(Library<? extends LibraryItem> library : libraries) {
+            final MenuOption<BibliotecaApp> listOption = new ListOption(library);
+            loggedOutOptions.add(listOption);
+            loggedInOptions.add(listOption);
+            loggedInOptions.add(new CheckoutOption(library));
+            loggedInOptions.add(new ReturnOption(library));
+        }
+        final MenuOption<BibliotecaApp> quitOption = new QuitOption();
+        loggedInOptions.add(new LogoutOption());
+        loggedInOptions.add(quitOption);
+        loggedOutOptions.add(quitOption);
+
+        loggedInMenu = new Menu<>(this, loggedInOptions);
+        loggedOutMenu = new Menu<>(this, loggedOutOptions);
     }
 
-    public void run() throws IOException, BibliotecaAppQuitException {
+    public void run() throws Exception {
         displayWelcomeMessage(outputStream);
         displayMenuOptions(outputStream);
-
         while(scanner.hasNextLine())
-            selectMenuOption(scanner.nextLine(), outputStream);
+            selectMenuOption(scanner.nextLine());
+    }
+
+    protected boolean customerLoggedIn() {
+        return customer != null;
+    }
+
+    protected void login(String libraryNumber, String password) throws InvalidCredentialsException {
+        final Customer customer = customers.get(libraryNumber);
+        if(customer == null) throw new InvalidCredentialsException();
+        customer.verifyPassword(password);
+        this.customer = customer;
     }
 
     protected void displayWelcomeMessage(OutputStream outputStream) throws IOException {
@@ -53,89 +69,63 @@ public final class BibliotecaApp {
 
     protected void displayMenuOptions(OutputStream outputStream) throws IOException {
         writeLine("Please use one of the following options:", outputStream);
-        writeLine(LIST_BOOKS_OPTION, outputStream);
-        writeLine(LIST_MOVIES_OPTION, outputStream);
-        writeLine(CHECKOUT_BOOK_OPTION, outputStream);
-        writeLine(CHECKOUT_MOVIE_OPTION, outputStream);
-        writeLine(RETURN_BOOK_OPTION, outputStream);
-        writeLine(RETURN_MOVIE_OPTION, outputStream);
-        writeLine(QUIT_OPTION, outputStream);
+        for(final MenuOption<?> option : getMenu().getOptions())
+            writeLine(option.getDisplay(), outputStream);
     }
 
-    protected void selectMenuOption(String option, OutputStream outputStream) throws IOException, BibliotecaAppQuitException {
-        option = option == null ? "" : option;
+    protected Menu<BibliotecaApp> getMenu() {
+        return customerLoggedIn() ? loggedInMenu : loggedOutMenu;
+    }
 
-        final String[] input = option.split(":");
-        final String command = input[0];
-
-        if (LIST_BOOKS_OPTION.equals(command))
-            listBooks(outputStream);
-        else if (LIST_MOVIES_OPTION.equals(command))
-            listMovies(outputStream);
-        else if (QUIT_OPTION.equals(command))
-            quit(outputStream);
-        else if (CHECKOUT_BOOK_COMMAND.equals(command) && input.length == 2)
-            checkoutBook(input[1].trim(), outputStream);
-        else if (CHECKOUT_MOVIE_COMMAND.equals(command) && input.length == 2)
-            checkoutMovie(input[1].trim(), outputStream);
-        else if (RETURN_BOOK_COMMAND.equals(command) && input.length == 2)
-            returnBook(input[1].trim(), outputStream);
-        else if (RETURN_MOVIE_COMMAND.equals(command) && input.length == 2)
-            returnMovie(input[1].trim(), outputStream);
-        else
+    protected void selectMenuOption(String option) throws Exception {
+        try {
+            loggedInMenu.executeCommand(option);
+        } catch (CommandNotFoundException e) {
             writeLine("Select a valid option!", outputStream);
+        }
     }
 
-    protected void listBooks(OutputStream outputStream) throws IOException {
-        listItems(bookLibrary, Book.getCSVHeaders(), outputStream);
+    private void listItems(Library<?> library) throws IOException {
+        listItems(library, outputStream);
     }
 
-    public void listMovies(OutputStream outputStream) throws IOException {
-        listItems(movieLibrary, Movie.getCSVHeaders(), outputStream);
-    }
-
-    private static void listItems(Library<?> library, String csvHeader, OutputStream outputStream) throws IOException {
-        writeLine(csvHeader, outputStream);
-        for(final LibraryItem<?> item : library.getItems())
+    protected <T extends LibraryItem> void listItems(Library<T> library, OutputStream outputStream) throws IOException {
+        final List<T> items = library.getItems();
+        writeLine(items.get(0).getCSVHeaders(), outputStream);
+        for (T item : items)
             writeLine(item.getCSVRepresentation(), outputStream);
     }
 
-    protected void checkoutBook(String title, OutputStream outputStream) throws IOException {
-        checkoutItem(title, bookLibrary, "book", outputStream);
+    private void checkoutItem(String title, Library library) throws IOException {
+        checkoutItem(title, library, outputStream);
     }
 
-    protected void checkoutMovie(String title, OutputStream outputStream) throws IOException {
-        checkoutItem(title, movieLibrary, "movie", outputStream);
-    }
-
-    private void checkoutItem(String title, Library library, String itemName, OutputStream outputStream) throws IOException {
+    protected void checkoutItem(String title, Library library, OutputStream outputStream) throws IOException {
+        final String itemName = library.getItemsName().toLowerCase();
         try {
             library.checkoutItemByTitle(title, customer);
             writeLine("Thank you! Enjoy the " + itemName + ".", outputStream);
-        } catch (LibraryItemNotFoundException e) {
-            writeLine("That " + itemName + " is not available.", outputStream);
-        } catch (LibraryItemNotAvailableException e) {
+        } catch (LibraryItemNotFoundException | LibraryItemNotAvailableException e) {
             writeLine("That " + itemName + " is not available.", outputStream);
         }
     }
 
-    protected void returnBook(String title, OutputStream outputStream) throws IOException {
-        returnItem(title, bookLibrary, "book", outputStream);
+    private void returnItem(String title, Library library) throws IOException {
+        returnItem(title, library, outputStream);
     }
 
-    protected void returnMovie(String title, OutputStream outputStream) throws IOException {
-        returnItem(title, movieLibrary, "movie", outputStream);
-    }
-
-    private void returnItem(String title, Library library, String itemName, OutputStream outputStream) throws IOException {
+    protected void returnItem(String title, Library library, OutputStream outputStream) throws IOException {
+        final String itemName = library.getItemsName().toLowerCase();
         try {
             library.returnItemByTitle(title);
             writeLine("Thank you for returning the " + itemName + ".", outputStream);
-        } catch (LibraryItemNotCheckedOutException e) {
-            writeLine("That is not a valid " + itemName + " to return.", outputStream);
-        } catch (LibraryItemNotFoundException e) {
+        } catch (LibraryItemNotCheckedOutException | LibraryItemNotFoundException e) {
             writeLine("That is not a valid " + itemName + " to return.", outputStream);
         }
+    }
+
+    private void quit() throws IOException, BibliotecaAppQuitException {
+        quit(outputStream);
     }
 
     protected static void quit(OutputStream outputStream) throws BibliotecaAppQuitException, IOException {
@@ -147,12 +137,75 @@ public final class BibliotecaApp {
         outputStream.write((text + "\n").getBytes());
     }
 
-    public static void mLain(String[] args) throws IOException {
-        final BibliotecaApp app = new BibliotecaApp(new Scanner(System.in), System.out);
+    public static void main(String[] args) throws Exception {
+        final Library<?> movieLibrary = new Library<>(Movie.getMovies(), Movie.class);
+        final Library<?> bookLibrary = new Library<>(Book.getBooks(), Book.class);
+        final BibliotecaApp app =
+                new BibliotecaApp(new Scanner(System.in), System.out, Customer.getCustomers(), bookLibrary, movieLibrary);
         try {
             app.run();
         } catch (BibliotecaAppQuitException e) {
             System.exit(0);
+        }
+    }
+
+    private static class ListOption extends MenuOption<BibliotecaApp> {
+        private final Library<?> library;
+        private ListOption(final Library<?> library) {
+            super("List " + library.getItemsName() + "s", false);
+            this.library = library;
+        }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.listItems(library);
+        }
+    }
+
+    private static class CheckoutOption extends MenuOption<BibliotecaApp> {
+        private final Library<?> library;
+        private CheckoutOption(final Library<?> library) {
+            super("Checkout " + library.getItemsName(), "<Title>", true);
+            this.library = library;
+        }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.checkoutItem(arg, library);
+        }
+    }
+
+    private static class ReturnOption extends MenuOption<BibliotecaApp> {
+        private final Library<?> library;
+        private ReturnOption(final Library<?> library) {
+            super("Return " + library.getItemsName(), "<Title>", true);
+            this.library = library;
+        }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.returnItem(arg, library);
+        }
+    }
+
+    private static class QuitOption extends MenuOption<BibliotecaApp> {
+        private QuitOption() { super("Quit", false); }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.quit();
+        }
+    }
+
+    private static class LoginOption extends MenuOption<BibliotecaApp> {
+        private LoginOption() { super("Login", "<Library Number> <Password>", false); }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.quit();
+        }
+    }
+
+    private static class LogoutOption extends MenuOption<BibliotecaApp> {
+        private LogoutOption() { super("Logout", true); }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.quit();
         }
     }
 

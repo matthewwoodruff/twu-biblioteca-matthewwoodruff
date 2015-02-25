@@ -1,6 +1,9 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.UserPasswordIncorrectException;
+import com.twu.biblioteca.exceptions.InvalidCredentialsException;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Matt on 24/02/15.
@@ -39,9 +42,9 @@ public class Customer {
         return emailAddress;
     }
 
-    public void verifyPassword(String enteredPassword) throws UserPasswordIncorrectException {
+    public void verifyPassword(String enteredPassword) throws InvalidCredentialsException {
         if(!password.equals(enteredPassword))
-            throw new UserPasswordIncorrectException();
+            throw new InvalidCredentialsException();
     }
 
     public String getLibraryNumber() {
@@ -72,6 +75,13 @@ public class Customer {
         result = 31 * result + password.hashCode();
         result = 31 * result + libraryNumber.hashCode();
         return result;
+    }
+
+    protected static Set<Customer> getCustomers() {
+        final Set<Customer> customers = new HashSet<>();
+        customers.add(new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567"));
+        customers.add(new Customer("Quentin", "Tarantino", "quentin@example.com", "Password2", "234-5678"));
+        return customers;
     }
 
 }

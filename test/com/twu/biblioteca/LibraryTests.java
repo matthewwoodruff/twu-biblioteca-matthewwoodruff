@@ -1,8 +1,9 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
+import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,15 +37,25 @@ public class LibraryTests {
         greatExpectations = new Book("Great Expectations", "Charles Dickens", "1860");
         pickwickPapers = new Book("The Pickwick Papers", "Charles Dickens", "1837");
         bleakHouse = new Book("Bleak House", "Charles Dickens", "1853");
-        books = new HashSet<Book>();
+        books = new HashSet<>();
         books.add(greatExpectations);
         books.add(pickwickPapers);
-        library = new Library<Book>(books);
+        library = new Library<>(books, Book.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testLibraryConstructorDisallowsNullItems() {
-        new Library<Book>(null);
+        new Library<>(null, Book.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLibraryConstructorDisallowsNullItemsClass() {
+        new Library<>(books, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLibraryConstructorDisallowsEmptyItems() {
+        new Library(new HashSet<>(), Book.class);
     }
 
     @Test
@@ -162,6 +173,16 @@ public class LibraryTests {
     @Test
     public void testFindItemByTitleThatDoesntExist() {
         assertThat(library.findItemByTitle("Hard Times"), is(nullValue()));
+    }
+
+    @Test
+    public void testGetClassOfItemsInLibrary() {
+        assertThat(library.getItemsClass(), CoreMatchers.<Class<Book>>is(Book.class));
+    }
+
+    @Test
+    public void testGetNameOfItemsInLibrary() {
+        assertThat(library.getItemsName(), is("Book"));
     }
 
 }

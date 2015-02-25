@@ -1,6 +1,6 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.UserPasswordIncorrectException;
+import com.twu.biblioteca.exceptions.InvalidCredentialsException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,12 +35,12 @@ public class CustomerTests {
     }
 
     @Test
-    public void testUserCanBeVerifiedWithPassword() throws UserPasswordIncorrectException {
+    public void testUserCanBeVerifiedWithPassword() throws InvalidCredentialsException {
         customer.verifyPassword("Password1");
     }
 
-    @Test(expected = UserPasswordIncorrectException.class)
-    public void testVerificationWithWrongPasswordThrowsException() throws UserPasswordIncorrectException {
+    @Test(expected = InvalidCredentialsException.class)
+    public void testVerificationWithWrongPasswordThrowsException() throws InvalidCredentialsException {
         customer.verifyPassword("wrong password");
     }
 

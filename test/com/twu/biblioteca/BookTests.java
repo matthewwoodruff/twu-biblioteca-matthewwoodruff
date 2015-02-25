@@ -1,7 +1,5 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
-import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,5 +64,20 @@ public class BookTests {
     public void testBookHasCSVRepresentation() {
         assertThat(book.getCSVRepresentation(), is("Great Expectations, Charles Dickens, 1860"));
     }
+
+    @Test
+    public void testBookHasCSVHeaders() {
+        assertThat(book.getCSVHeaders(), is("Title, Author, Year"));
+    }
+
+//    @Test
+//    public void testDisplayItemsInCSVFormat() {
+//        final List<String> csvLines = Arrays.asList(
+//                "List Books",
+//                "Checkout Book: Great Expectations",
+//                "Return Book: Great Expectations",
+//                "Quit");
+//        assertThat(library.toCSV(), is(StringUtils.join(csvLines, "\n")));
+//    }
 
 }

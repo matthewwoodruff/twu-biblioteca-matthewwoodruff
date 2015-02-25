@@ -1,8 +1,8 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
+import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 
 import java.util.*;
 
@@ -11,11 +11,14 @@ import java.util.*;
  */
 public class Library<T extends LibraryItem> {
 
-    private final List<T> items = new ArrayList<T>();
-    private final Map<String, T> itemsTitleMap = new HashMap<String, T>();
+    private final List<T> items = new ArrayList<>();
+    private final Map<String, T> itemsTitleMap = new HashMap<>();
+    private final Class<T> itemsClass;
 
-    public Library(Set<T> items) {
-        if (items == null) throw new IllegalArgumentException("items cannot be null");
+    public Library(Set<T> items, Class<T> itemsClass) {
+        if(items == null || items.isEmpty()) throw new IllegalArgumentException("items cannot be null or empty");
+        if(itemsClass == null) throw new IllegalArgumentException("itemsClass cannot be null");
+        this.itemsClass = itemsClass;
         this.items.addAll(items);
         Collections.sort(this.items);
         for(final T item : items)
@@ -23,7 +26,7 @@ public class Library<T extends LibraryItem> {
     }
 
     public List<T> getItems() {
-        final List<T> availableItems = new ArrayList<T>();
+        final List<T> availableItems = new ArrayList<>();
         for(final T item : items)
             if (item.isAvailable())
                 availableItems.add(item);
@@ -57,4 +60,11 @@ public class Library<T extends LibraryItem> {
         item.checkOut(checkedOutBy);
     }
 
+    public Class<T> getItemsClass() {
+        return itemsClass;
+    }
+
+    public String getItemsName() {
+        return getItemsClass().getSimpleName();
+    }
 }

@@ -9,6 +9,7 @@ import java.util.Set;
 public final class Book extends LibraryItem<Book> {
 
     private final String author;
+    private static final String CSV_HEADERS = "Title, Author, Year";
 
     public Book(String title, String author, String year) {
         super(title, year);
@@ -52,12 +53,13 @@ public final class Book extends LibraryItem<Book> {
         return getTitle() + ", " + author + ", " + getYear();
     }
 
-    public static String getCSVHeaders() {
-        return "Title, Author, Year";
+    @Override
+    public String getCSVHeaders() {
+        return CSV_HEADERS;
     }
 
-    protected static Set<Book> getDefaultBooks() {
-        final Set<Book> books = new HashSet<Book>();
+    protected static Set<Book> getBooks() {
+        final Set<Book> books = new HashSet<>();
         books.add(new Book("Great Expectations", "Charles Dickens", "1860"));
         books.add(new Book("The Pickwick Papers", "Charles Dickens", "1837"));
         books.add(new Book("Bleak House", "Charles Dickens", "1853"));

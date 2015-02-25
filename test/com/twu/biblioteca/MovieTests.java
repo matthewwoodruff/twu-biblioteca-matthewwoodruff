@@ -1,7 +1,5 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
-import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,6 +102,11 @@ public class MovieTests {
     public void testUnratedMovieHasCSVRepresentation() {
         final Movie unratedMovie = Movie.createUnratedMovie("Kill Bill", "2003", "Quentin Tarantino");
         assertThat(unratedMovie.getCSVRepresentation(), is("Kill Bill, Quentin Tarantino, 2003, Unrated"));
+    }
+
+    @Test
+    public void testMovieHasCSVHeaders() {
+        assertThat(pulpFiction.getCSVHeaders(), is("Title, Director, Year, Rating"));
     }
 
 }
