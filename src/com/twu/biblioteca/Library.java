@@ -34,8 +34,8 @@ public class Library<T extends LibraryItem> {
         return itemsTitleMap.get(title);
     }
 
-    public void checkoutItemByTitle(String title) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
-        checkoutItem(findItemByTitle(title));
+    public void checkoutItemByTitle(String title, User checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+        checkoutItem(findItemByTitle(title), checkedOutBy);
     }
 
     public void returnItemByTitle(String title) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
@@ -52,9 +52,9 @@ public class Library<T extends LibraryItem> {
             throw new LibraryItemNotFoundException();
     }
 
-    public void checkoutItem(T item) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+    public void checkoutItem(T item, User checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
         verifyItemExists(item);
-        item.checkOut();
+        item.checkOut(checkedOutBy);
     }
 
 }

@@ -15,6 +15,8 @@ public final class BibliotecaApp {
     private final OutputStream outputStream;
     private final Library<Book> library;
 
+    private final User user = new User("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
+
     private static final String LIST_BOOKS_OPTION = "List Books";
     private static final String CHECKOUT_BOOK_OPTION = "Checkout Book: <Title>";
     private static final String CHECKOUT_BOOK_COMMAND = "Checkout Book";
@@ -76,7 +78,7 @@ public final class BibliotecaApp {
 
     protected void checkoutBook(String title, OutputStream outputStream) throws IOException {
         try {
-            library.checkoutItemByTitle(title);
+            library.checkoutItemByTitle(title, user);
             writeLine("Thank you! Enjoy the book.", outputStream);
         } catch (LibraryItemNotFoundException e) {
             writeLine("That book is not available.", outputStream);
