@@ -1,10 +1,7 @@
 package com.twu.biblioteca;
 
 import com.sun.deploy.util.StringUtils;
-import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
-import com.twu.biblioteca.exceptions.CustomerRequiredException;
-import com.twu.biblioteca.exceptions.InvalidCredentialsException;
-import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
+import com.twu.biblioteca.exceptions.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +21,6 @@ public class BibliotecaAppTests {
 
     private BibliotecaApp app;
     private OutputStream outputStream;
-    private OutputStream testOutputStream;
     private Scanner inputScanner;
     private Library<?> movieLibrary;
     private Library<?> bookLibrary;
@@ -34,7 +30,6 @@ public class BibliotecaAppTests {
     @Before
     public void setup() {
         outputStream = new ByteArrayOutputStream();
-        testOutputStream = new ByteArrayOutputStream();
         inputScanner = new Scanner("");
         movieLibrary = new Library<>(Movie.getMovies(), Movie.class);
         bookLibrary = new Library<>(Book.getBooks(), Book.class);
@@ -148,9 +143,9 @@ public class BibliotecaAppTests {
 
     @Test
     public void testListBooksListsAllBooks() throws IOException {
-        app.listItems(bookLibrary, testOutputStream);
+        app.listItems(bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThatBookListIsDisplayedWithAllBooks(scanner);
         assertThat(scanner.hasNextLine(), is(false));
     }
@@ -184,17 +179,17 @@ public class BibliotecaAppTests {
 
     @Test(expected = BibliotecaAppQuitException.class)
     public void testQuitThrowsException() throws BibliotecaAppQuitException, IOException {
-        BibliotecaApp.quit(testOutputStream);
+        app.quit();
     }
 
     @Test
     public void testQuitShowsLeavingMessage() throws BibliotecaAppQuitException, IOException {
         try {
-            BibliotecaApp.quit(testOutputStream);
+            app.quit();
             fail();
         } catch (BibliotecaAppQuitException e) {}
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you for using Biblioteca App!"));
         assertThat(scanner.hasNextLine(), is(false));
     }
@@ -206,43 +201,43 @@ public class BibliotecaAppTests {
 
     @Test(expected = CustomerRequiredException.class)
     public void testCheckOutItemRequiresCustomerToBeLoggedIn() throws IOException, CustomerRequiredException {
-        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
+        app.checkoutItem("Great Expectations", bookLibrary);
     }
 
     @Test
     public void testCustomerChecksOutABookSuccessfully() throws IOException, InvalidCredentialsException, CustomerRequiredException {
         setCustomer();
-        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
+        app.checkoutItem("Great Expectations", bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you! Enjoy the book."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
     @Test
-    public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException {
+    public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException, LibraryItemNotAvailableException {
+        checkoutGreatExpectations();
         setCustomer();
-        app.checkoutItem("Great Expectations", bookLibrary, outputStream);
-        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
+        app.checkoutItem("Great Expectations", bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("That book is not available."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
     @Test
     public void testCustomerChecksOutANonExistingBook() throws IOException, CustomerRequiredException {
-        app.checkoutItem("Hard Times", bookLibrary, testOutputStream);
+        app.checkoutItem("Hard Times", bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("That book is not available."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
     @Test
-    public void testCustomerCheckedOutBookDoesNotAppearInBookList() throws Exception {
+    public void testCustomerCheckedOutBookDoesNotAppearInBookList() throws Exception, LibraryItemNotAvailableException {
+        checkoutGreatExpectations();
         setCustomer();
-        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
         app.selectMenuOption("List Books");
 
         final Scanner scanner = getOutputScanner();
@@ -268,40 +263,43 @@ public class BibliotecaAppTests {
 //    }
 
     @Test
-    public void testCustomerReturnsABookSuccessfully() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException {
+    public void testCustomerReturnsABookSuccessfully() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException, LibraryItemNotAvailableException {
+        checkoutGreatExpectations();
         setCustomer();
-        app.checkoutItem("Great Expectations", bookLibrary, outputStream);
-        app.returnItem("Great Expectations", bookLibrary, testOutputStream);
+        app.returnItem("Great Expectations", bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you for returning the book."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
+    private void checkoutGreatExpectations() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
+        bookLibrary.checkoutItemByTitle("Great Expectations", customer);
+    }
+
     @Test
     public void testCustomerReturnsABookThatHasntBeenCheckedOut() throws IOException {
-        app.returnItem("Great Expectations", bookLibrary, testOutputStream);
+        app.returnItem("Great Expectations", bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("That is not a valid book to return."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
     @Test
     public void testCustomerReturnsABookThatDoesntExist() throws IOException {
-        app.returnItem("Hard Times", bookLibrary, testOutputStream);
+        app.returnItem("Hard Times", bookLibrary);
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("That is not a valid book to return."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
     @Test
     public void testReturnedBookAppearsInBookList() throws Exception {
+        checkoutGreatExpectations();
+        returnGreatExpectations();
         setCustomer();
-        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
-        app.returnItem("Great Expectations", bookLibrary, testOutputStream);
-
         app.selectMenuOption("List Books");
 
         final Scanner scanner = getOutputScanner();
@@ -312,7 +310,7 @@ public class BibliotecaAppTests {
     @Test
     public void testCustomerSelectsReturnBookOptionSuccessfully() throws Exception {
         setCustomer();
-        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
+        checkoutGreatExpectations();
         app.selectMenuOption("Return Book: Great Expectations");
 
         final Scanner scanner = getOutputScanner();
@@ -387,16 +385,16 @@ public class BibliotecaAppTests {
         app.removeCustomer();
     }
 
-    private Scanner getTestOutputScanner() {
-        return getOutputScanner(testOutputStream);
-    }
-
     private Scanner getOutputScanner() {
         return getOutputScanner(outputStream);
     }
 
     private Scanner getOutputScanner(OutputStream outputStream) {
         return new Scanner(outputStream.toString());
+    }
+
+    private void returnGreatExpectations() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+        bookLibrary.returnItemByTitle("Great Expectations");
     }
 
 }

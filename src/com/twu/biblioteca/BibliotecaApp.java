@@ -101,22 +101,14 @@ public final class BibliotecaApp {
         }
     }
 
-    private void listItems(Library<?> library) throws IOException {
-        listItems(library, outputStream);
-    }
-
-    protected <T extends LibraryItem> void listItems(Library<T> library, OutputStream outputStream) throws IOException {
+    protected <T extends LibraryItem> void listItems(Library<T> library) throws IOException {
         final List<T> items = library.getItems();
         writeLine(items.get(0).getCSVHeaders(), outputStream);
         for (T item : items)
             writeLine(item.getCSVRepresentation(), outputStream);
     }
 
-    private void checkoutItem(String title, Library library) throws IOException, CustomerRequiredException {
-        checkoutItem(title, library, outputStream);
-    }
-
-    protected void checkoutItem(String title, Library library, OutputStream outputStream) throws IOException, CustomerRequiredException {
+    protected void checkoutItem(String title, Library library) throws IOException, CustomerRequiredException {
         final String itemName = library.getItemsName().toLowerCase();
         try {
             library.checkoutItemByTitle(title, customer);
@@ -126,11 +118,7 @@ public final class BibliotecaApp {
         }
     }
 
-    private void returnItem(String title, Library library) throws IOException {
-        returnItem(title, library, outputStream);
-    }
-
-    protected void returnItem(String title, Library library, OutputStream outputStream) throws IOException {
+    protected void returnItem(String title, Library library) throws IOException {
         final String itemName = library.getItemsName().toLowerCase();
         try {
             library.returnItemByTitle(title);
@@ -140,11 +128,7 @@ public final class BibliotecaApp {
         }
     }
 
-    private void quit() throws IOException, BibliotecaAppQuitException {
-        quit(outputStream);
-    }
-
-    protected static void quit(OutputStream outputStream) throws BibliotecaAppQuitException, IOException {
+    protected void quit() throws BibliotecaAppQuitException, IOException {
         writeLine("Thank you for using Biblioteca App!", outputStream);
         throw new BibliotecaAppQuitException();
     }
