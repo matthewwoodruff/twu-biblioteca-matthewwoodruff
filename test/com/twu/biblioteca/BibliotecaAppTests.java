@@ -111,20 +111,64 @@ public class BibliotecaAppTests {
     public void testLogoutMessage() throws InvalidCredentialsException, IOException, CustomerRequiredException {
         setCustomer();
         app.logout();
+        assertThatLogoutMessageIsDisplayed();
+    }
+
+    @Test
+    public void testLoginMessage() throws InvalidCredentialsException, IOException, CustomerRequiredException {
+        app.login("123-4567", "Password1");
 
         final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Logout Successful!"));
-        assertThat(app.isCustomerLoggedIn(), is(false));
+        assertThat(scanner.nextLine(), is("Login Successful!"));
+        assertThat(app.isCustomerLoggedIn(), is(true));
     }
 
-    @Test(expected = InvalidCredentialsException.class)
+    @Test
     public void testLoginWillThrowExceptionIfLibraryNumberNotKnown() throws InvalidCredentialsException, IOException {
         app.login("234-5678", "Password1");
+        assertThatLoginFailedMessageIsDisplayed();
     }
 
-    @Test(expected = InvalidCredentialsException.class)
-    public void testLoginWillThrowExceptionIfIncorrectPasswordEntered() throws InvalidCredentialsException, IOException {
+    @Test
+    public void testLoginWithBadCredentials() throws InvalidCredentialsException, IOException {
         app.login("123-4567", "Password2");
+        assertThatLoginFailedMessageIsDisplayed();
+    }
+
+    /*
+     * Customer Selecting Menu Options
+     */
+
+    @Test
+    public void testCustomerSelectsLoginOption() throws Exception {
+        app.selectMenuOption("Login: 123-4567 Password1");
+        assertThatLoginSuccessMessageAndMainMenuIsDisplayed();
+    }
+
+    @Test
+    public void testCustomerSelectsLoginOptionWithIncorrectDetails() throws Exception {
+        app.selectMenuOption("Login: 123-4567 Password2");
+
+        assertThatLoginFailedMessageIsDisplayed();
+    }
+
+    private void assertThatLoginFailedMessageIsDisplayed() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Login Failed! Please try again."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testCustomerSelectsLogoutOptionWhilstNotLoggedIn() throws Exception {
+        app.selectMenuOption("Logout");
+        assertThatCustomerSeesAccessDeniedMessage();
+    }
+
+    @Test
+    public void testCustomerSelectsLogoutOptionWhilstLoggedIn() throws Exception {
+        setCustomer();
+        app.selectMenuOption("Logout");
+        assertThatLogoutMessageIsDisplayed();
     }
 
     /*
@@ -164,11 +208,7 @@ public class BibliotecaAppTests {
     @Test
     public void testMenuDisplaysCorrectlyAfterLoggingIn() throws IOException, InvalidCredentialsException {
         app.login("123-4567", "Password1");
-
-        final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Login Successful!"));
-        assertThatMainMenuIsDisplayed(scanner);
-        assertThat(scanner.hasNextLine(), is(false));
+        assertThatLoginSuccessMessageAndMainMenuIsDisplayed();
     }
 
     /*
@@ -426,10 +466,6 @@ public class BibliotecaAppTests {
         app.setCustomer(customer, "Password1");
     }
 
-    private void removeCustomer() throws InvalidCredentialsException, IOException, CustomerRequiredException {
-        app.removeCustomer();
-    }
-
     private Scanner getOutputScanner() {
         return getOutputScanner(outputStream);
     }
@@ -480,6 +516,19 @@ public class BibliotecaAppTests {
         final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Thank you for returning the book."));
         assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    private void assertThatLoginSuccessMessageAndMainMenuIsDisplayed() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Login Successful!"));
+        assertThatMainMenuIsDisplayed(scanner);
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    private void assertThatLogoutMessageIsDisplayed() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Logout Successful!"));
+        assertThat(app.isCustomerLoggedIn(), is(false));
     }
 
 }

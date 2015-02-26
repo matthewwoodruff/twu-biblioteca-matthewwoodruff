@@ -1,5 +1,7 @@
 package com.twu.biblioteca.helper;
 
+import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
+
 /**
  * Created by Matt on 25/02/15.
  */
@@ -9,7 +11,7 @@ public abstract class Option<T> {
     private final Boolean displayState;
     private String display;
 
-    public abstract void execute(T target, String arg) throws Exception;
+    public abstract void execute(T target, String arg) throws Exception, BibliotecaAppQuitException;
 
     protected Option(final String command, final String argumentName, final Boolean displayState) {
         if (command == null || command.isEmpty()) throw new IllegalArgumentException("command cannot be null or empty");

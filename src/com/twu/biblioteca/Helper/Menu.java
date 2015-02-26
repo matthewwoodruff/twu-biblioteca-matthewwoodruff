@@ -1,5 +1,6 @@
 package com.twu.biblioteca.helper;
 
+import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
 import com.twu.biblioteca.exceptions.CommandNotFoundException;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class Menu<T> {
         if(option != null)
             option.execute(target, args.length > 1 ? args[1].trim() : null);
         else
-            throw new CommandNotFoundException(command);
+            throw new CommandNotFoundException();
     }
 
     public List<Option<T>> getOptions() {

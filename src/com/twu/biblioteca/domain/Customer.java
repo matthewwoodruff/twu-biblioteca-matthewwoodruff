@@ -15,9 +15,10 @@ public final class Customer {
     private final String emailAddress;
     private final String password;
     private final String libraryNumber;
+    private final String phoneNumber;
 
     public Customer(final String firstName, final String lastName, final String emailAddress,
-                    final String password, final String libraryNumber) {
+                    final String password, final String libraryNumber, final String phoneNumber) {
         if(firstName == null || firstName.isEmpty()) throw new IllegalArgumentException("firstName cannot be null or empty");
         if(lastName == null || lastName.isEmpty()) throw new IllegalArgumentException("lastName cannot be null or empty");
         if(emailAddress == null || emailAddress.isEmpty()) throw new IllegalArgumentException("emailAddress cannot be null or empty");
@@ -28,6 +29,12 @@ public final class Customer {
         this.emailAddress = emailAddress;
         this.password = password;
         this.libraryNumber = libraryNumber;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Customer(final String firstName, final String lastName, final String emailAddress,
+                    final String password, final String libraryNumber) {
+        this(firstName, lastName, emailAddress, password, libraryNumber, null);
     }
 
     public String getFirstName() {
@@ -51,6 +58,10 @@ public final class Customer {
         return libraryNumber;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,6 +74,8 @@ public final class Customer {
         if (!lastName.equals(customer.lastName)) return false;
         if (!libraryNumber.equals(customer.libraryNumber)) return false;
         if (!password.equals(customer.password)) return false;
+        if (phoneNumber != null ? !phoneNumber.equals(customer.phoneNumber) : customer.phoneNumber != null)
+            return false;
 
         return true;
     }
@@ -74,6 +87,7 @@ public final class Customer {
         result = 31 * result + emailAddress.hashCode();
         result = 31 * result + password.hashCode();
         result = 31 * result + libraryNumber.hashCode();
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         return result;
     }
 
@@ -82,6 +96,12 @@ public final class Customer {
         customers.add(new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567"));
         customers.add(new Customer("Quentin", "Tarantino", "quentin@example.com", "Password2", "234-5678"));
         return customers;
+    }
+
+    public String viewDetails() {
+        return "Name: " + firstName + " " + lastName +
+                "\nEmail Address: " + emailAddress +
+                (phoneNumber == null ? "" : "\nPhone: " + phoneNumber);
     }
 
 }

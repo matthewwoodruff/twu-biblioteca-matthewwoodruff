@@ -1,12 +1,12 @@
 package com.twu.biblioteca;
 
-import com.twu.biblioteca.helper.Menu;
-import com.twu.biblioteca.helper.Option;
 import com.twu.biblioteca.domain.Book;
 import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.domain.LibraryItem;
 import com.twu.biblioteca.domain.Movie;
 import com.twu.biblioteca.exceptions.*;
+import com.twu.biblioteca.helper.Menu;
+import com.twu.biblioteca.helper.Option;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -66,9 +66,13 @@ public final class BibliotecaApp {
     }
 
     void login(String libraryNumber, String password) throws InvalidCredentialsException, IOException {
-        setCustomer(customers.get(libraryNumber), password);
-        writeLine("Login Successful!");
-        displayMenuOptions();
+        try {
+            setCustomer(customers.get(libraryNumber), password);
+            writeLine("Login Successful!");
+            displayMenuOptions();
+        } catch (InvalidCredentialsException e) {
+            writeLine("Login Failed! Please try again.");
+        }
     }
 
     void removeCustomer() throws CustomerRequiredException {
@@ -188,6 +192,16 @@ public final class BibliotecaApp {
         }
     }
 
+//    private static class MyDetailsOption extends Option<BibliotecaApp> {
+//        private MyDetailsOption() {
+//            super("My Details", true);
+//        }
+//        @Override
+//        public void execute(BibliotecaApp target, String arg) throws Exception {
+//            target.viewMyDetails();
+//        }
+//    }
+
     private static class QuitOption extends Option<BibliotecaApp> {
         private QuitOption() { super("Quit", null); }
         @Override
@@ -200,7 +214,9 @@ public final class BibliotecaApp {
         private LoginOption() { super("Login", "<Library Number> <Password>", false); }
         @Override
         public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.quit();
+            final String[] args = arg.split(" ");
+            if(args.length != 2) throw new CommandNotFoundException();
+            target.login(args[0], args[1]);
         }
     }
 
@@ -208,7 +224,7 @@ public final class BibliotecaApp {
         private LogoutOption() { super("Logout", true); }
         @Override
         public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.quit();
+            target.logout();
         }
     }
 
