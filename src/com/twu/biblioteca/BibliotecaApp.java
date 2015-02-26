@@ -38,6 +38,7 @@ public final class BibliotecaApp {
             options.add(new CheckoutOption(library));
             options.add(new ReturnOption(library));
         }
+        options.add(new MyDetailsOption());
         options.add(new LogoutOption());
         options.add(new QuitOption());
 
@@ -156,6 +157,11 @@ public final class BibliotecaApp {
         }
     }
 
+    public void viewMyDetails() throws CustomerRequiredException, IOException {
+        verifyCustomerIsLoggedIn();
+        writeLine(customer.viewDetails());
+    }
+
     private static class ListOption extends Option<BibliotecaApp> {
         private final Library<?> library;
         private ListOption(final Library<?> library) {
@@ -192,15 +198,15 @@ public final class BibliotecaApp {
         }
     }
 
-//    private static class MyDetailsOption extends Option<BibliotecaApp> {
-//        private MyDetailsOption() {
-//            super("My Details", true);
-//        }
-//        @Override
-//        public void execute(BibliotecaApp target, String arg) throws Exception {
-//            target.viewMyDetails();
-//        }
-//    }
+    private static class MyDetailsOption extends Option<BibliotecaApp> {
+        private MyDetailsOption() {
+            super("My Details", true);
+        }
+        @Override
+        public void execute(BibliotecaApp target, String arg) throws Exception {
+            target.viewMyDetails();
+        }
+    }
 
     private static class QuitOption extends Option<BibliotecaApp> {
         private QuitOption() { super("Quit", null); }

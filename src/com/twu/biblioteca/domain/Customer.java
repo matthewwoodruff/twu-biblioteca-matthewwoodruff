@@ -93,7 +93,7 @@ public final class Customer {
 
     public static Set<Customer> getCustomers() {
         final Set<Customer> customers = new HashSet<>();
-        customers.add(new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567"));
+        customers.add(new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567", "07712345678"));
         customers.add(new Customer("Quentin", "Tarantino", "quentin@example.com", "Password2", "234-5678"));
         return customers;
     }

@@ -171,6 +171,19 @@ public class BibliotecaAppTests {
         assertThatLogoutMessageIsDisplayed();
     }
 
+    @Test
+    public void testCustomerSelectsMyDetailsOptionWhilstLoggedIn() throws Exception {
+        setCustomer();
+        app.selectMenuOption("My Details");
+        assertThatCustomersDetailsAreDisplayed();
+    }
+
+    @Test
+    public void testCustomerSelectsMyDetailsOptionWhilstNotLoggedIn() throws Exception {
+        app.selectMenuOption("My Details");
+        assertThatCustomerSeesAccessDeniedMessage();
+    }
+
     /*
      * Menu Display
      */
@@ -209,6 +222,22 @@ public class BibliotecaAppTests {
     public void testMenuDisplaysCorrectlyAfterLoggingIn() throws IOException, InvalidCredentialsException {
         app.login("123-4567", "Password1");
         assertThatLoginSuccessMessageAndMainMenuIsDisplayed();
+    }
+
+    /*
+     * My Details
+     */
+
+    @Test(expected = CustomerRequiredException.class)
+    public void testMyDetailsWhenNotLoggedInThrowsException() throws CustomerRequiredException, IOException {
+        app.viewMyDetails();
+    }
+
+    @Test
+    public void testMyDetailsCanBeDisplayedWhenLoggedIn() throws CustomerRequiredException, InvalidCredentialsException, IOException {
+        setCustomer();
+        app.viewMyDetails();
+        assertThatCustomersDetailsAreDisplayed();
     }
 
     /*
@@ -372,8 +401,6 @@ public class BibliotecaAppTests {
         assertThatCustomerSeesReturnBookSuccessMessage();
     }
 
-
-
     /*
      * QUIT
      */
@@ -444,6 +471,7 @@ public class BibliotecaAppTests {
         assertThat(scanner.nextLine(), is("List Movies"));
         assertThat(scanner.nextLine(), is("Checkout Movie: <Title>"));
         assertThat(scanner.nextLine(), is("Return Movie: <Title>"));
+        assertThat(scanner.nextLine(), is("My Details"));
         assertThat(scanner.nextLine(), is("Logout"));
         assertThat(scanner.nextLine(), is("Quit"));
     }
@@ -529,6 +557,14 @@ public class BibliotecaAppTests {
         final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Logout Successful!"));
         assertThat(app.isCustomerLoggedIn(), is(false));
+    }
+
+    private void assertThatCustomersDetailsAreDisplayed() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Name: Charles Dickens"));
+        assertThat(scanner.nextLine(), is("Email Address: charles@example.com"));
+        assertThat(scanner.nextLine(), is("Phone: 07712345678"));
+        assertThat(scanner.hasNextLine(), is(false));
     }
 
 }
