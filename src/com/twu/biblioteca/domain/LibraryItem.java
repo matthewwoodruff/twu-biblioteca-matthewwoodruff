@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.domain;
 
 import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
@@ -13,7 +13,7 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
     private final String year;
     private Customer checkedOutBy;
 
-    protected LibraryItem(final String title, final String year) {
+    LibraryItem(final String title, final String year) {
         if(title == null || title.isEmpty()) throw new IllegalArgumentException("title cannot be null or empty");
         if(year == null || year.isEmpty()) throw new IllegalArgumentException("year cannot be null or empty");
         this.title = title;
@@ -30,6 +30,10 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
 
     public boolean isCheckedOut() {
         return checkedOutBy != null;
+    }
+
+    public boolean isAvailable() {
+        return !isCheckedOut();
     }
 
     public void checkOut(Customer checkedOutBy) throws LibraryItemNotAvailableException, CustomerRequiredException {
@@ -50,10 +54,6 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
     public void checkIn() throws LibraryItemNotCheckedOutException {
         verifyItemIsCheckedOut();
         checkedOutBy = null;
-    }
-
-    public boolean isAvailable() {
-        return !isCheckedOut();
     }
 
     @Override

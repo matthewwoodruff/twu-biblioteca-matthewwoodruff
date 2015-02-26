@@ -1,5 +1,7 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.helper.Menu;
+import com.twu.biblioteca.helper.Option;
 import com.twu.biblioteca.exceptions.CommandNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +51,7 @@ public class MenuTests {
         assertThat(menu.getOptions(), is(Arrays.asList(new SimpleOption(), new ArgumentOption())));
     }
 
-    private Menu buildMenuWithOptions(MenuOption<SimpleClass>... opts) {
+    private Menu buildMenuWithOptions(Option<SimpleClass>... opts) {
         return new Menu<>(simpleClass, Arrays.asList(opts));
     }
 
@@ -58,7 +60,7 @@ public class MenuTests {
         public String string;
     }
 
-    private static class SimpleOption extends MenuOption<SimpleClass> {
+    private static class SimpleOption extends Option<SimpleClass> {
         public SimpleOption() { super("Simple Command", false); }
         @Override
         public void execute(SimpleClass target, String arg) throws Exception {
@@ -66,7 +68,7 @@ public class MenuTests {
         }
     }
 
-    private static class ArgumentOption extends MenuOption<SimpleClass> {
+    private static class ArgumentOption extends Option<SimpleClass> {
         public ArgumentOption() { super("Argument Command", false); }
         @Override
         public void execute(SimpleClass target, String arg) throws Exception {

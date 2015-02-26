@@ -1,9 +1,9 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.helper;
 
 /**
  * Created by Matt on 25/02/15.
  */
-public abstract class MenuOption<T> {
+public abstract class Option<T> {
 
     private final String command;
     private final boolean secure;
@@ -11,14 +11,14 @@ public abstract class MenuOption<T> {
 
     public abstract void execute(T target, String arg) throws Exception;
 
-    protected MenuOption(final String command, final String argumentName, final boolean secure) {
+    protected Option(final String command, final String argumentName, final boolean secure) {
         if (command == null || command.isEmpty()) throw new IllegalArgumentException("command cannot be null or empty");
         this.command = command;
         this.display = argumentName == null ? command : command + ": " + argumentName;
         this.secure = secure;
     }
 
-    protected MenuOption(final String command, final boolean secure) {
+    protected Option(final String command, final boolean secure) {
         this(command, null, secure);
     }
 
@@ -33,7 +33,7 @@ public abstract class MenuOption<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MenuOption that = (MenuOption) o;
+        Option that = (Option) o;
 
         if (!command.equals(that.command)) return false;
 

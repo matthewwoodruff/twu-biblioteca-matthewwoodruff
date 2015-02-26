@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.domain;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -77,7 +77,7 @@ public final class Movie extends LibraryItem<Movie> {
         return CSV_HEADERS;
     }
 
-    protected static Set<Movie> getMovies() {
+    public static Set<Movie> getMovies() {
         final Set<Movie> movies = new HashSet<>();
         movies.add(Movie.createRatedMovie("Pulp Fiction", "1994", "Quentin Tarantino", 9));
         movies.add(Movie.createRatedMovie("Reservoir Dogs", "1992", "Quentin Tarantino", 8));

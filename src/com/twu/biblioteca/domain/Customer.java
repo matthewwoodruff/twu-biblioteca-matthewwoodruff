@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.domain;
 
 import com.twu.biblioteca.exceptions.InvalidCredentialsException;
 
@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Created by Matt on 24/02/15.
  */
-public class Customer {
+public final class Customer {
 
     private final String firstName;
     private final String lastName;
@@ -77,7 +77,7 @@ public class Customer {
         return result;
     }
 
-    protected static Set<Customer> getCustomers() {
+    public static Set<Customer> getCustomers() {
         final Set<Customer> customers = new HashSet<>();
         customers.add(new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567"));
         customers.add(new Customer("Quentin", "Tarantino", "quentin@example.com", "Password2", "234-5678"));

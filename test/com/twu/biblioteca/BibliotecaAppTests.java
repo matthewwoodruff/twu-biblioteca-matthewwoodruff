@@ -1,6 +1,9 @@
 package com.twu.biblioteca;
 
 import com.sun.deploy.util.StringUtils;
+import com.twu.biblioteca.domain.Book;
+import com.twu.biblioteca.domain.Customer;
+import com.twu.biblioteca.domain.Movie;
 import com.twu.biblioteca.exceptions.*;
 import org.junit.Before;
 import org.junit.Test;

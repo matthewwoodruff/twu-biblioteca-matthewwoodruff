@@ -1,5 +1,7 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.domain.Customer;
+import com.twu.biblioteca.domain.LibraryItem;
 import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
@@ -26,7 +28,7 @@ public class Library<T extends LibraryItem> {
             itemsTitleMap.put(item.getTitle(), item);
     }
 
-    public List<T> getItems() {
+    List<T> getItems() {
         final List<T> availableItems = new ArrayList<>();
         for(final T item : items)
             if (item.isAvailable())
@@ -34,19 +36,19 @@ public class Library<T extends LibraryItem> {
         return availableItems;
     }
 
-    public T findItemByTitle(String title) {
+    T findItemByTitle(String title) {
         return itemsTitleMap.get(title);
     }
 
-    public void checkoutItemByTitle(String title, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
+    void checkoutItemByTitle(String title, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
         checkoutItem(findItemByTitle(title), checkedOutBy);
     }
 
-    public void returnItemByTitle(String title) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+    void returnItemByTitle(String title) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
         returnItem(findItemByTitle(title));
     }
 
-    public void returnItem(T item) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+    void returnItem(T item) throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
         verifyItemExists(item);
         item.checkIn();
     }
@@ -56,7 +58,7 @@ public class Library<T extends LibraryItem> {
             throw new LibraryItemNotFoundException();
     }
 
-    public void checkoutItem(T item, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
+    void checkoutItem(T item, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
         verifyItemExists(item);
         item.checkOut(checkedOutBy);
     }

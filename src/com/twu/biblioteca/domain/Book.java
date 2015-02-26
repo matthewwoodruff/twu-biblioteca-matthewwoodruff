@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.domain;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +58,7 @@ public final class Book extends LibraryItem<Book> {
         return CSV_HEADERS;
     }
 
-    protected static Set<Book> getBooks() {
+    public static Set<Book> getBooks() {
         final Set<Book> books = new HashSet<>();
         books.add(new Book("Great Expectations", "Charles Dickens", "1860"));
         books.add(new Book("The Pickwick Papers", "Charles Dickens", "1837"));
