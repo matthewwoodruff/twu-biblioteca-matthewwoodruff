@@ -6,27 +6,28 @@ package com.twu.biblioteca.helper;
 public abstract class Option<T> {
 
     private final String command;
-    private final boolean secure;
+    private final Boolean displayState;
     private String display;
 
     public abstract void execute(T target, String arg) throws Exception;
 
-    protected Option(final String command, final String argumentName, final boolean secure) {
+    protected Option(final String command, final String argumentName, final Boolean displayState) {
         if (command == null || command.isEmpty()) throw new IllegalArgumentException("command cannot be null or empty");
         this.command = command;
         this.display = argumentName == null ? command : command + ": " + argumentName;
-        this.secure = secure;
+        this.displayState = displayState;
     }
 
-    protected Option(final String command, final boolean secure) {
-        this(command, null, secure);
+    protected Option(final String command, final Boolean displayState) {
+        this(command, null, displayState);
     }
 
     public String getCommand() {
         return command;
     }
     public String getDisplay() { return display; }
-    public boolean isSecure() { return secure; }
+
+    public boolean isDisplayForLoginStatus(boolean loggedIn) { return displayState == null || (displayState == loggedIn);}
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,5 @@
 package com.twu.biblioteca.domain;
 
-import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.exceptions.InvalidCredentialsException;
 import org.junit.Before;
 import org.junit.Test;

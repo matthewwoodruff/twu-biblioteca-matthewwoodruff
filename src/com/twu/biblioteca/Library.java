@@ -70,4 +70,8 @@ public class Library<T extends LibraryItem> {
     public String getItemsName() {
         return getItemsClass().getSimpleName();
     }
+
+    public String getItemsNameLowercase() {
+        return getItemsName().toLowerCase();
+    }
 }

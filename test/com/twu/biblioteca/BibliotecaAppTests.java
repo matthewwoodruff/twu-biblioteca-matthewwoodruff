@@ -11,9 +11,11 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
 
-import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -84,20 +86,20 @@ public class BibliotecaAppTests {
 
     @Test
     public void testCanDetermineIfCustomerLoggedIn() {
-        assertThat(app.customerLoggedIn(), is(false));
+        assertThat(app.isCustomerLoggedIn(), is(false));
     }
 
     @Test
     public void testCanLogIn() throws InvalidCredentialsException, IOException {
         setCustomer();
-        assertThat(app.customerLoggedIn(), is(true));
+        assertThat(app.isCustomerLoggedIn(), is(true));
     }
 
     @Test
     public void testCanLoginAndLogout() throws IOException, InvalidCredentialsException, CustomerRequiredException {
         setCustomer();
         app.logout();
-        assertThat(app.customerLoggedIn(), is(false));
+        assertThat(app.isCustomerLoggedIn(), is(false));
     }
 
     @Test(expected = CustomerRequiredException.class)
@@ -112,7 +114,7 @@ public class BibliotecaAppTests {
 
         final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Logout Successful!"));
-        assertThat(app.customerLoggedIn(), is(false));
+        assertThat(app.isCustomerLoggedIn(), is(false));
     }
 
     @Test(expected = InvalidCredentialsException.class)
@@ -235,13 +237,18 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutAnItemSuccessfully() throws IOException, InvalidCredentialsException, CustomerRequiredException {
+    public void testCustomerAttemptsToCheckOutAnItemWhilstNotLoggedIn() throws Exception {
+        app.selectMenuOption("Checkout Book: Great Expectations");
+
+        assertThatCustomerSeesAccessDeniedMessage();
+    }
+
+    @Test
+    public void testCheckOutAnItemSuccessfully() throws IOException, InvalidCredentialsException, CustomerRequiredException {
         setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary);
 
-        final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you! Enjoy the book."));
-        assertThat(scanner.hasNextLine(), is(false));
+        assertThatCustomerSeesSuccessfulCheckoutBookMessage();
     }
 
     @Test
@@ -253,7 +260,8 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutANonExistingItem() throws IOException, CustomerRequiredException {
+    public void testCustomerChecksOutANonExistingItem() throws IOException, CustomerRequiredException, InvalidCredentialsException {
+        setCustomer();
         app.checkoutItem("Hard Times", bookLibrary);
         assertThatCustomerSeesBookNotAvailableMessage();
     }
@@ -262,20 +270,18 @@ public class BibliotecaAppTests {
     public void testCustomerSelectsCheckOutItemOptionSuccessfully() throws Exception {
         setCustomer();
         app.selectMenuOption("Checkout Book: Great Expectations");
-
-        final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you! Enjoy the book."));
-        assertThat(scanner.hasNextLine(), is(false));
+        assertThatCustomerSeesSuccessfulCheckoutBookMessage();
     }
-
-//    @Test(expected = CustomerRequiredException.class)
-//    public void testReturnItemRequiresCustomerToBeLoggedIn() throws IOException, CustomerRequiredException {
-//        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
-//    }
 
     /*
      * Return Item
      */
+
+    @Test(expected = CustomerRequiredException.class)
+    public void testReturnItemRequiresCustomerToBeLoggedIn() throws IOException, CustomerRequiredException, LibraryItemNotFoundException, LibraryItemNotAvailableException {
+        checkoutGreatExpectations();
+        app.returnItem("Great Expectations", bookLibrary);
+    }
 
     @Test
     public void testCustomerReturnsAnItemSuccessfully() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException, LibraryItemNotAvailableException {
@@ -286,13 +292,22 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerReturnsAnItemThatHasntBeenCheckedOut() throws IOException {
+    public void testCustomerAttemptsToReturnAnItemWhilstNotLoggedIn() throws Exception {
+        app.selectMenuOption("Return Book: Great Expectations");
+
+        assertThatCustomerSeesAccessDeniedMessage();
+    }
+
+    @Test
+    public void testCustomerReturnsAnItemThatHasntBeenCheckedOut() throws IOException, CustomerRequiredException, InvalidCredentialsException {
+        setCustomer();
         app.returnItem("Great Expectations", bookLibrary);
         assertThatCustomerSeesInvalidBookReturnMessage();
     }
 
     @Test
-    public void testCustomerReturnsAnItemThatDoesntExist() throws IOException {
+    public void testCustomerReturnsAnItemThatDoesntExist() throws IOException, CustomerRequiredException, InvalidCredentialsException {
+        setCustomer();
         app.returnItem("Hard Times", bookLibrary);
         assertThatCustomerSeesInvalidBookReturnMessage();
     }
@@ -317,11 +332,7 @@ public class BibliotecaAppTests {
         assertThatCustomerSeesReturnBookSuccessMessage();
     }
 
-    private void assertThatCustomerSeesReturnBookSuccessMessage() {
-        final Scanner scanner = getOutputScanner();
-        assertThat(scanner.nextLine(), is("Thank you for returning the book."));
-        assertThat(scanner.hasNextLine(), is(false));
-    }
+
 
     /*
      * QUIT
@@ -450,6 +461,24 @@ public class BibliotecaAppTests {
     private void assertThatCustomerSeesUnrecognisedOptionMessage() {
         final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Select a valid option!"));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    private void assertThatCustomerSeesSuccessfulCheckoutBookMessage() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Thank you! Enjoy the book."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    private void assertThatCustomerSeesAccessDeniedMessage() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("You must be logged in to perform that task."));
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    private void assertThatCustomerSeesReturnBookSuccessMessage() {
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Thank you for returning the book."));
         assertThat(scanner.hasNextLine(), is(false));
     }
 
