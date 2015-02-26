@@ -1,5 +1,6 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 import org.junit.Before;
@@ -43,20 +44,20 @@ public class LibraryItemTests {
     }
 
     @Test
-    public void testItemCanBeCheckedOut() throws LibraryItemNotAvailableException {
+    public void testItemCanBeCheckedOut() throws LibraryItemNotAvailableException, CustomerRequiredException {
         item.checkOut(customer);
         assertThat(item.isCheckedOut(), is(true));
         assertThat(item.isAvailable(), is(false));
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
-    public void testCheckingOutAnUnavailableItemThrowsAnException() throws LibraryItemNotAvailableException {
+    public void testCheckingOutAnUnavailableItemThrowsAnException() throws LibraryItemNotAvailableException, CustomerRequiredException {
         item.checkOut(customer);
         item.checkOut(customer);
     }
 
     @Test
-    public void testItemCanBeCheckedIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
+    public void testItemCanBeCheckedIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException, CustomerRequiredException {
         item.checkOut(customer);
         item.checkIn();
         assertThat(item.isCheckedOut(), is(false));
@@ -69,12 +70,12 @@ public class LibraryItemTests {
     }
 
     @Test
-    public void testCheckingOutAnItemRequiresAUser() throws LibraryItemNotAvailableException {
+    public void testCheckingOutAnItemRequiresAUser() throws LibraryItemNotAvailableException, CustomerRequiredException {
         item.checkOut(customer);
     }
 
     @Test
-    public void testUserThatCheckedOutAnItemCanBeObtained() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
+    public void testUserThatCheckedOutAnItemCanBeObtained() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException, CustomerRequiredException {
         item.checkOut(customer);
         assertThat(item.getCheckedOutBy(), is(customer));
     }
@@ -84,13 +85,13 @@ public class LibraryItemTests {
         item.getCheckedOutBy();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testCheckingOutAnItemWithNullUserThrowsAnException() throws LibraryItemNotAvailableException {
+    @Test(expected = CustomerRequiredException.class)
+    public void testCheckingOutAnItemWithNullUserThrowsAnException() throws LibraryItemNotAvailableException, CustomerRequiredException {
         item.checkOut(null);
     }
 
     @Test(expected = LibraryItemNotCheckedOutException.class)
-    public void testCheckedOutByCannotBeObtainedAfterCheckingIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException {
+    public void testCheckedOutByCannotBeObtainedAfterCheckingIn() throws LibraryItemNotAvailableException, LibraryItemNotCheckedOutException, CustomerRequiredException {
         item.checkOut(customer);
         item.checkIn();
         item.getCheckedOutBy();

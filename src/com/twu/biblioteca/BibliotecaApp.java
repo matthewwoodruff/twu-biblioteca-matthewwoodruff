@@ -46,8 +46,8 @@ public final class BibliotecaApp {
     }
 
     public void run() throws Exception {
-        displayWelcomeMessage(outputStream);
-        displayMenuOptions(outputStream);
+        displayWelcomeMessage();
+        displayMenuOptions();
         while(scanner.hasNextLine())
             selectMenuOption(scanner.nextLine());
     }
@@ -56,18 +56,34 @@ public final class BibliotecaApp {
         return customer != null;
     }
 
-    protected void login(String libraryNumber, String password) throws InvalidCredentialsException {
-        final Customer customer = customers.get(libraryNumber);
+    protected void setCustomer(Customer customer, String password) throws InvalidCredentialsException {
         if(customer == null) throw new InvalidCredentialsException();
         customer.verifyPassword(password);
         this.customer = customer;
     }
 
-    protected void displayWelcomeMessage(OutputStream outputStream) throws IOException {
+    protected void login(String libraryNumber, String password) throws InvalidCredentialsException, IOException {
+        setCustomer(customers.get(libraryNumber), password);
+        writeLine("Login Successful!", outputStream);
+        displayMenuOptions();
+    }
+
+    protected void removeCustomer() throws CustomerRequiredException {
+        if(!customerLoggedIn()) throw new CustomerRequiredException();
+        customer = null;
+    }
+
+    public void logout() throws IOException, CustomerRequiredException {
+        removeCustomer();
+        writeLine("Logout Successful!", outputStream);
+        displayMenuOptions();
+    }
+
+    protected void displayWelcomeMessage() throws IOException {
         writeLine("Welcome to Biblioteca!", outputStream);
     }
 
-    protected void displayMenuOptions(OutputStream outputStream) throws IOException {
+    protected void displayMenuOptions() throws IOException {
         writeLine("Please use one of the following options:", outputStream);
         for(final MenuOption<?> option : getMenu().getOptions())
             writeLine(option.getDisplay(), outputStream);
@@ -79,7 +95,7 @@ public final class BibliotecaApp {
 
     protected void selectMenuOption(String option) throws Exception {
         try {
-            loggedInMenu.executeCommand(option);
+            getMenu().executeCommand(option);
         } catch (CommandNotFoundException e) {
             writeLine("Select a valid option!", outputStream);
         }
@@ -96,11 +112,11 @@ public final class BibliotecaApp {
             writeLine(item.getCSVRepresentation(), outputStream);
     }
 
-    private void checkoutItem(String title, Library library) throws IOException {
+    private void checkoutItem(String title, Library library) throws IOException, CustomerRequiredException {
         checkoutItem(title, library, outputStream);
     }
 
-    protected void checkoutItem(String title, Library library, OutputStream outputStream) throws IOException {
+    protected void checkoutItem(String title, Library library, OutputStream outputStream) throws IOException, CustomerRequiredException {
         final String itemName = library.getItemsName().toLowerCase();
         try {
             library.checkoutItemByTitle(title, customer);

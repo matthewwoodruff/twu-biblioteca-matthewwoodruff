@@ -1,5 +1,6 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
@@ -37,7 +38,7 @@ public class Library<T extends LibraryItem> {
         return itemsTitleMap.get(title);
     }
 
-    public void checkoutItemByTitle(String title, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+    public void checkoutItemByTitle(String title, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
         checkoutItem(findItemByTitle(title), checkedOutBy);
     }
 
@@ -55,7 +56,7 @@ public class Library<T extends LibraryItem> {
             throw new LibraryItemNotFoundException();
     }
 
-    public void checkoutItem(T item, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException {
+    public void checkoutItem(T item, Customer checkedOutBy) throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
         verifyItemExists(item);
         item.checkOut(checkedOutBy);
     }

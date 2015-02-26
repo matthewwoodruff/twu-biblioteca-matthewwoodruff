@@ -2,6 +2,7 @@ package com.twu.biblioteca;
 
 import com.sun.deploy.util.StringUtils;
 import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
+import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.InvalidCredentialsException;
 import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 import org.junit.Before;
@@ -28,6 +29,7 @@ public class BibliotecaAppTests {
     private Library<?> movieLibrary;
     private Library<?> bookLibrary;
     private Set<Customer> customers;
+    private Customer customer;
 
     @Before
     public void setup() {
@@ -37,6 +39,7 @@ public class BibliotecaAppTests {
         movieLibrary = new Library<>(Movie.getMovies(), Movie.class);
         bookLibrary = new Library<>(Book.getBooks(), Book.class);
         customers = Customer.getCustomers();
+        customer = customers.iterator().next();
         app = new BibliotecaApp(inputScanner, outputStream, customers, bookLibrary, movieLibrary);
     }
 
@@ -62,9 +65,9 @@ public class BibliotecaAppTests {
 
     @Test
     public void testDisplayWelcomeMessage() throws IOException {
-        app.displayWelcomeMessage(testOutputStream);
+        app.displayWelcomeMessage();
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
         assertThat(scanner.nextLine(), is("Welcome to Biblioteca!"));
         assertThat(scanner.hasNextLine(), is(false));
     }
@@ -75,39 +78,73 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerCanLogIn() throws InvalidCredentialsException {
-        login();
+    public void testCanLogIn() throws InvalidCredentialsException, IOException {
+        setCustomer();
         assertThat(app.customerLoggedIn(), is(true));
     }
 
+    @Test
+    public void testCanLoginAndLogout() throws IOException, InvalidCredentialsException, CustomerRequiredException {
+        setCustomer();
+        app.logout();
+        assertThat(app.customerLoggedIn(), is(false));
+    }
+
+    @Test(expected = CustomerRequiredException.class)
+    public void testLogoutThrowsExceptionIfNotLoggedIn() throws IOException, InvalidCredentialsException, CustomerRequiredException {
+        app.logout();
+    }
+
+    @Test
+    public void testLogoutMessage() throws InvalidCredentialsException, IOException, CustomerRequiredException {
+        setCustomer();
+        app.logout();
+
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Logout Successful!"));
+        assertThat(app.customerLoggedIn(), is(false));
+    }
+
     @Test(expected = InvalidCredentialsException.class)
-    public void testLoginWithThrowExceptionIfLibraryNumberNotKnown() throws InvalidCredentialsException {
+    public void testLoginWillThrowExceptionIfLibraryNumberNotKnown() throws InvalidCredentialsException, IOException {
         app.login("234-5678", "Password1");
     }
 
     @Test(expected = InvalidCredentialsException.class)
-    public void testLoginWithThrowExceptionIfIncorrectPasswordEntered() throws InvalidCredentialsException {
+    public void testLoginWillThrowExceptionIfIncorrectPasswordEntered() throws InvalidCredentialsException, IOException {
         app.login("123-4567", "Password2");
     }
 
     @Test
     public void testMenuDisplaysCorrectlyWhenLoggedOut() throws IOException, InvalidCredentialsException {
-        app.displayMenuOptions(testOutputStream);
+        app.displayMenuOptions();
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
+        assertThatLoginMenuIsDisplayed(scanner);
+        assertThat(scanner.hasNextLine(), is(false));
+    }
+
+    @Test
+    public void testMenuDisplaysCorrectlyAfterLoggingOut() throws IOException, InvalidCredentialsException, CustomerRequiredException {
+        setCustomer();
+        app.logout();
+
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Logout Successful!"));
         assertThatLoginMenuIsDisplayed(scanner);
         assertThat(scanner.hasNextLine(), is(false));
     }
 
     @Test
     public void testMenuDisplaysCorrectlyWhenLoggedIn() throws IOException, InvalidCredentialsException {
-        login();
-        app.displayMenuOptions(testOutputStream);
+        app.login("123-4567", "Password1");
 
-        final Scanner scanner = getTestOutputScanner();
+        final Scanner scanner = getOutputScanner();
+        assertThat(scanner.nextLine(), is("Login Successful!"));
         assertThatMainMenuIsDisplayed(scanner);
         assertThat(scanner.hasNextLine(), is(false));
     }
+
 
     @Test
     public void testListBooksListsAllBooks() throws IOException {
@@ -167,9 +204,14 @@ public class BibliotecaAppTests {
         app.selectMenuOption("Quit");
     }
 
+    @Test(expected = CustomerRequiredException.class)
+    public void testCheckOutItemRequiresCustomerToBeLoggedIn() throws IOException, CustomerRequiredException {
+        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
+    }
+
     @Test
-    public void testCustomerChecksOutABookSuccessfully() throws IOException, InvalidCredentialsException {
-        login();
+    public void testCustomerChecksOutABookSuccessfully() throws IOException, InvalidCredentialsException, CustomerRequiredException {
+        setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
@@ -178,8 +220,8 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException {
-        login();
+    public void testCustomerChecksOutAnUnavailableBook() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException {
+        setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary, outputStream);
         app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
 
@@ -189,7 +231,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerChecksOutANonExistingBook() throws IOException {
+    public void testCustomerChecksOutANonExistingBook() throws IOException, CustomerRequiredException {
         app.checkoutItem("Hard Times", bookLibrary, testOutputStream);
 
         final Scanner scanner = getTestOutputScanner();
@@ -198,8 +240,8 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCheckedOutBookDoesNotAppearInBookList() throws Exception {
-        login();
+    public void testCustomerCheckedOutBookDoesNotAppearInBookList() throws Exception {
+        setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
         app.selectMenuOption("List Books");
 
@@ -212,7 +254,7 @@ public class BibliotecaAppTests {
 
     @Test
     public void testCustomerSelectsCheckOutBookOptionSuccessfully() throws Exception {
-        login();
+        setCustomer();
         app.selectMenuOption("Checkout Book: Great Expectations");
 
         final Scanner scanner = getOutputScanner();
@@ -220,9 +262,14 @@ public class BibliotecaAppTests {
         assertThat(scanner.hasNextLine(), is(false));
     }
 
+//    @Test(expected = CustomerRequiredException.class)
+//    public void testReturnItemRequiresCustomerToBeLoggedIn() throws IOException, CustomerRequiredException {
+//        app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
+//    }
+
     @Test
-    public void testCustomerReturnsABookSuccessfully() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException {
-        login();
+    public void testCustomerReturnsABookSuccessfully() throws LibraryItemNotFoundException, IOException, InvalidCredentialsException, CustomerRequiredException {
+        setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary, outputStream);
         app.returnItem("Great Expectations", bookLibrary, testOutputStream);
 
@@ -251,7 +298,7 @@ public class BibliotecaAppTests {
 
     @Test
     public void testReturnedBookAppearsInBookList() throws Exception {
-        login();
+        setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
         app.returnItem("Great Expectations", bookLibrary, testOutputStream);
 
@@ -264,7 +311,7 @@ public class BibliotecaAppTests {
 
     @Test
     public void testCustomerSelectsReturnBookOptionSuccessfully() throws Exception {
-        login();
+        setCustomer();
         app.checkoutItem("Great Expectations", bookLibrary, testOutputStream);
         app.selectMenuOption("Return Book: Great Expectations");
 
@@ -283,7 +330,7 @@ public class BibliotecaAppTests {
 
         inputScanner = new Scanner(StringUtils.join(commands, "\n"));
         app = new BibliotecaApp(inputScanner, outputStream, customers, bookLibrary, movieLibrary);
-        login();
+        setCustomer();
         try {
             app.run();
         } catch (BibliotecaAppQuitException e) {}
@@ -332,8 +379,12 @@ public class BibliotecaAppTests {
         assertThat(scanner.nextLine(), is("Reservoir Dogs, Quentin Tarantino, 1992, 8"));
     }
 
-    private void login() throws InvalidCredentialsException {
-        app.login("123-4567", "Password1");
+    private void setCustomer() throws InvalidCredentialsException, IOException {
+        app.setCustomer(customer, "Password1");
+    }
+
+    private void removeCustomer() throws InvalidCredentialsException, IOException, CustomerRequiredException {
+        app.removeCustomer();
     }
 
     private Scanner getTestOutputScanner() {

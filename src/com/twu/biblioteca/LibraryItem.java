@@ -1,5 +1,6 @@
 package com.twu.biblioteca;
 
+import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 
@@ -31,8 +32,8 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
         return checkedOutBy != null;
     }
 
-    public void checkOut(Customer checkedOutBy) throws LibraryItemNotAvailableException {
-        if(checkedOutBy == null) throw new IllegalArgumentException("checkedOutBy cannot be null");
+    public void checkOut(Customer checkedOutBy) throws LibraryItemNotAvailableException, CustomerRequiredException {
+        if(checkedOutBy == null) throw new CustomerRequiredException();
         if(isCheckedOut()) throw new LibraryItemNotAvailableException();
         this.checkedOutBy = checkedOutBy;
     }
