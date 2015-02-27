@@ -1,5 +1,7 @@
 package com.twu.biblioteca.helper;
 
+import com.twu.biblioteca.SecurityContext;
+import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.exceptions.CommandNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +52,7 @@ public class MenuTests {
     }
 
     private Menu buildMenuWithOptions(Option<SimpleClass>... opts) {
-        return new Menu<>(simpleClass, Arrays.asList(opts));
+        return new Menu<>(simpleClass, new SecurityContext(Customer.getCustomers()), Arrays.asList(opts));
     }
 
     private static class SimpleClass {

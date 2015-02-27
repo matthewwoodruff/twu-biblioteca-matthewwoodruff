@@ -9,6 +9,7 @@ public abstract class Option<T> {
 
     private final String command;
     private final Boolean displayState;
+    private final boolean requiresSecure;
     private String display;
 
     public abstract void execute(T target, String arg) throws Exception, BibliotecaAppQuitException;
@@ -18,6 +19,7 @@ public abstract class Option<T> {
         this.command = command;
         this.display = argumentName == null ? command : command + ": " + argumentName;
         this.displayState = displayState;
+        this.requiresSecure = Boolean.TRUE.equals(displayState);
     }
 
     protected Option(final String command, final Boolean displayState) {
@@ -28,7 +30,7 @@ public abstract class Option<T> {
         return command;
     }
     public String getDisplay() { return display; }
-
+    public boolean requiresSecure() { return requiresSecure; };
     public boolean isDisplayForLoginStatus(boolean loggedIn) { return displayState == null || (displayState == loggedIn);}
 
     @Override

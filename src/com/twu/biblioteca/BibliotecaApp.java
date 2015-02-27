@@ -18,18 +18,15 @@ public final class BibliotecaApp {
     private final OutputStream outputStream;
     private final Menu<BibliotecaApp> menu;
 
-    private Customer customer;
+    private final SecurityContext securityContext = new SecurityContext(Customer.getCustomers());
 
     private Map<String, Customer> customers = new HashMap<>();
 
-    BibliotecaApp(Scanner scanner, OutputStream outputStream, Set<Customer> customers, Library<?>... libraries) {
+    BibliotecaApp(Scanner scanner, OutputStream outputStream, Library<?>... libraries) {
         if (scanner == null) throw new IllegalArgumentException("scanner cannot be null");
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
         this.scanner = scanner;
         this.outputStream = outputStream;
-
-        for(final Customer customer : customers)
-            this.customers.put(customer.getLibraryNumber(), customer);
 
         final List<Option<BibliotecaApp>> options = new ArrayList<>();
         options.add(new LoginOption());
@@ -42,7 +39,7 @@ public final class BibliotecaApp {
         options.add(new LogoutOption());
         options.add(new QuitOption());
 
-        menu = new Menu<>(this, options);
+        menu = new Menu<>(this, securityContext, options);
     }
 
     void run() throws Exception {
@@ -52,37 +49,14 @@ public final class BibliotecaApp {
             selectMenuOption(scanner.nextLine());
     }
 
-    boolean isCustomerLoggedIn() {
-        return customer != null;
-    }
-
-    private void verifyCustomerIsLoggedIn() throws CustomerRequiredException {
-        if(!isCustomerLoggedIn()) throw new CustomerRequiredException();
-    }
-
-    void setCustomer(Customer customer, String password) throws InvalidCredentialsException {
-        if(customer == null) throw new InvalidCredentialsException();
-        customer.verifyPassword(password);
-        this.customer = customer;
-    }
-
     void login(String libraryNumber, String password) throws InvalidCredentialsException, IOException {
-        try {
-            setCustomer(customers.get(libraryNumber), password);
-            writeLine("Login Successful!");
-            displayMenuOptions();
-        } catch (InvalidCredentialsException e) {
-            writeLine("Login Failed! Please try again.");
-        }
-    }
-
-    void removeCustomer() throws CustomerRequiredException {
-        verifyCustomerIsLoggedIn();
-        customer = null;
+        securityContext.login(libraryNumber, password);
+        writeLine("Login Successful!");
+        displayMenuOptions();
     }
 
     void logout() throws IOException, CustomerRequiredException {
-        removeCustomer();
+        securityContext.logout();
         writeLine("Logout Successful!");
         displayMenuOptions();
     }
@@ -94,9 +68,7 @@ public final class BibliotecaApp {
     void displayMenuOptions() throws IOException {
         writeLine("Please use one of the following options:");
         for(final Option<?> option : menu.getOptions())
-            if(option.isDisplayForLoginStatus(isCustomerLoggedIn()))
-                writeLine(option.getDisplay());
-
+            writeLine(option.getDisplay());
     }
 
     void selectMenuOption(String option) throws Exception {
@@ -106,6 +78,8 @@ public final class BibliotecaApp {
             writeLine("Select a valid option!");
         } catch (CustomerRequiredException e) {
             writeLine("You must be logged in to perform that task.");
+        } catch (InvalidCredentialsException e) {
+            writeLine("Login Failed! Please try again.");
         }
     }
 
@@ -117,9 +91,8 @@ public final class BibliotecaApp {
     }
 
     void checkoutItem(String title, Library library) throws IOException, CustomerRequiredException {
-        verifyCustomerIsLoggedIn();
         try {
-            library.checkoutItemByTitle(title, customer);
+            library.checkoutItemByTitle(title, securityContext.getCustomer());
             writeLine("Thank you! Enjoy the " + library.getItemsNameLowercase() + ".");
         } catch (LibraryItemNotFoundException | LibraryItemNotAvailableException e) {
             writeLine("That " + library.getItemsNameLowercase() + " is not available.");
@@ -127,7 +100,6 @@ public final class BibliotecaApp {
     }
 
     void returnItem(String title, Library library) throws IOException, CustomerRequiredException {
-        verifyCustomerIsLoggedIn();
         try {
             library.returnItemByTitle(title);
             writeLine("Thank you for returning the " + library.getItemsNameLowercase() + ".");
@@ -149,7 +121,7 @@ public final class BibliotecaApp {
         final Library<?> movieLibrary = new Library<>(Movie.getMovies(), Movie.class);
         final Library<?> bookLibrary = new Library<>(Book.getBooks(), Book.class);
         final BibliotecaApp app =
-                new BibliotecaApp(new Scanner(System.in), System.out, Customer.getCustomers(), bookLibrary, movieLibrary);
+                new BibliotecaApp(new Scanner(System.in), System.out, bookLibrary, movieLibrary);
         try {
             app.run();
         } catch (BibliotecaAppQuitException e) {
@@ -157,9 +129,13 @@ public final class BibliotecaApp {
         }
     }
 
+    SecurityContext getSecurityContext() {
+        return securityContext;
+    }
+
     public void viewMyDetails() throws CustomerRequiredException, IOException {
-        verifyCustomerIsLoggedIn();
-        writeLine(customer.viewDetails());
+        securityContext.verifyCustomerIsLoggedIn();
+        writeLine(securityContext.getCustomer().viewDetails());
     }
 
     private static class ListOption extends Option<BibliotecaApp> {
