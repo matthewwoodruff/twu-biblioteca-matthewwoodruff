@@ -20,8 +20,6 @@ public final class BibliotecaApp {
 
     private final SecurityContext securityContext = new SecurityContext(Customer.getCustomers());
 
-    private Map<String, Customer> customers = new HashMap<>();
-
     BibliotecaApp(Scanner scanner, OutputStream outputStream, Library<?>... libraries) {
         if (scanner == null) throw new IllegalArgumentException("scanner cannot be null");
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
@@ -92,7 +90,7 @@ public final class BibliotecaApp {
 
     void checkoutItem(String title, Library library) throws IOException, CustomerRequiredException {
         try {
-            library.checkoutItemByTitle(title, securityContext.getCustomer());
+            library.checkoutItemByTitle(title, securityContext.getLoggedInCustomer());
             writeLine("Thank you! Enjoy the " + library.getItemsNameLowercase() + ".");
         } catch (LibraryItemNotFoundException | LibraryItemNotAvailableException e) {
             writeLine("That " + library.getItemsNameLowercase() + " is not available.");
@@ -106,6 +104,10 @@ public final class BibliotecaApp {
         } catch (LibraryItemNotCheckedOutException | LibraryItemNotFoundException e) {
             writeLine("That is not a valid " + library.getItemsNameLowercase() + " to return.");
         }
+    }
+
+    void viewMyDetails() throws CustomerRequiredException, IOException {
+        writeLine(securityContext.getLoggedInCustomer().viewDetails());
     }
 
     void quit() throws BibliotecaAppQuitException, IOException {
@@ -131,11 +133,6 @@ public final class BibliotecaApp {
 
     SecurityContext getSecurityContext() {
         return securityContext;
-    }
-
-    public void viewMyDetails() throws CustomerRequiredException, IOException {
-        securityContext.verifyCustomerIsLoggedIn();
-        writeLine(securityContext.getCustomer().viewDetails());
     }
 
     private static class ListOption extends Option<BibliotecaApp> {

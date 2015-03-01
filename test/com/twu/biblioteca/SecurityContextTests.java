@@ -63,6 +63,17 @@ public class SecurityContextTests {
         securityContext.login("123-4567", "Password2");
     }
 
+    @Test
+    public void testGetLoggedInCustomer() throws InvalidCredentialsException, IOException, CustomerRequiredException {
+        setCustomer();
+        assertThat(securityContext.getLoggedInCustomer(), is(customer));
+    }
+
+    @Test(expected = CustomerRequiredException.class)
+    public void testGetLoggedInCustomerWhenNoCustomerLoggedInThrowsAnException() throws CustomerRequiredException {
+        securityContext.getLoggedInCustomer();
+    }
+
     private void setCustomer() throws InvalidCredentialsException, IOException {
         securityContext.setCustomer(customer, "Password1");
     }

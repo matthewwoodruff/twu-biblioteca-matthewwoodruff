@@ -51,4 +51,8 @@ public class SecurityContext implements SecurityStatus {
         setCustomer(customers.get(libraryNumber), password);
     }
 
+    public Customer getLoggedInCustomer() throws CustomerRequiredException {
+        verifyCustomerIsLoggedIn();
+        return customer;
+    }
 }
