@@ -249,7 +249,7 @@ public class BibliotecaAppTests {
     }
 
     @Test
-    public void testCustomerCheckedOutBookDoesNotAppearInBookList() throws Exception, LibraryItemNotAvailableException {
+    public void testCustomerCheckedOutBookDoesNotAppearInBookList() throws Exception {
         checkoutGreatExpectations();
         setCustomer();
         app.listItems(bookLibrary);

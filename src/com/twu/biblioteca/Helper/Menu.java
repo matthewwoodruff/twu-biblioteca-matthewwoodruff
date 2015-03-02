@@ -1,6 +1,5 @@
 package com.twu.biblioteca.helper;
 
-import com.twu.biblioteca.exceptions.BibliotecaAppQuitException;
 import com.twu.biblioteca.exceptions.CommandNotFoundException;
 import com.twu.biblioteca.exceptions.CustomerRequiredException;
 
