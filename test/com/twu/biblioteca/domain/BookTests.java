@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Matt on 23/02/15.
@@ -15,7 +17,10 @@ public class BookTests {
 
     @Before
     public void setup() {
-        book = new Book("Great Expectations", "Charles Dickens", "1860");
+        book = mock(Book.class);
+        when(book.getCSVHeaders()).thenReturn("Title, Author, Year");
+        when(book.getAuthor()).thenReturn("Charles Dickens");
+        when(book.getCSVRepresentation()).thenReturn("Great Expectations, Charles Dickens, 1860");
     }
 
     @Test
@@ -69,15 +74,5 @@ public class BookTests {
     public void testBookHasCSVHeaders() {
         assertThat(book.getCSVHeaders(), is("Title, Author, Year"));
     }
-
-//    @Test
-//    public void testDisplayItemsInCSVFormat() {
-//        final List<String> csvLines = Arrays.asList(
-//                "List Books",
-//                "Checkout Book: Great Expectations",
-//                "Return Book: Great Expectations",
-//                "Quit");
-//        assertThat(library.toCSV(), is(StringUtils.join(csvLines, "\n")));
-//    }
 
 }

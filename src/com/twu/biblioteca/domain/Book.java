@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by Matt on 23/02/15.
  */
-public final class Book extends LibraryItem<Book> {
+public class Book extends LibraryItem<Book> {
 
     private final String author;
     private static final String CSV_HEADERS = "Title, Author, Year";
