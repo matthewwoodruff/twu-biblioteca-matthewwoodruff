@@ -53,7 +53,7 @@ public class SecurityContextTests {
 
     @Test(expected = CustomerRequiredException.class)
     public void testLogoutThrowsExceptionIfNotLoggedIn() throws IOException, InvalidCredentialsException, CustomerRequiredException {
-        securityContext.logout();
+        securityContext.logout(); 
     }
 
     @Test(expected = InvalidCredentialsException.class)
