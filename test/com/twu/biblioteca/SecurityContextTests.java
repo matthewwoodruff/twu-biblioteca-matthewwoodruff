@@ -10,6 +10,8 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Matt on 27/02/15.
@@ -20,9 +22,10 @@ public class SecurityContextTests {
     private Customer customer;
 
     @Before
-    public void setup() {
+    public void setup() throws InvalidCredentialsException {
         securityContext = new SecurityContext(Customer.getCustomers());
-        customer = Customer.getCustomers().iterator().next();
+        customer = mock(Customer.class);
+        when(customer.getLibraryNumber()).thenReturn("123-4567");
     }
 
     /*
@@ -43,6 +46,7 @@ public class SecurityContextTests {
     @Test
     public void testCanLoginAndLogout() throws IOException, InvalidCredentialsException, CustomerRequiredException {
         setCustomer();
+        assertThat(securityContext.isCustomerLoggedIn(), is(true));
         securityContext.logout();
         assertThat(securityContext.isCustomerLoggedIn(), is(false));
     }

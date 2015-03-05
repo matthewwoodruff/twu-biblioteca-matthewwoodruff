@@ -5,9 +5,11 @@ import com.twu.biblioteca.exceptions.LibraryItemNotAvailableException;
 import com.twu.biblioteca.exceptions.LibraryItemNotCheckedOutException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by Matt on 25/02/15.
@@ -15,11 +17,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class LibraryItemTests {
 
     private LibraryItem item;
+    @Mock
     private Customer customer;
 
     @Before
     public void setup() {
-        customer = new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
+        customer = mock(Customer.class);
         item = new Book("Great Expectations", "Charles Dickens", "1860");
     }
 

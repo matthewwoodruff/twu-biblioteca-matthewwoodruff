@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Created by Matt on 24/02/15.
  */
-public final class Customer {
+public class Customer {
 
     private final String firstName;
     private final String lastName;

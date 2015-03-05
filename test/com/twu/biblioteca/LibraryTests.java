@@ -9,6 +9,7 @@ import com.twu.biblioteca.exceptions.LibraryItemNotFoundException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by Matt on 23/02/15.
@@ -31,15 +33,21 @@ public class LibraryTests {
 
     private Set<Book> books;
 
+    /* todo Annotation not working */
+    @Mock
     private Customer customer;
 
     @Before
     public void setup() {
-        customer = new Customer("Charles", "Dickens", "charles@example.com", "Password1", "123-4567");
+        customer = mock(Customer.class);
 
-        greatExpectations = new Book("Great Expectations", "Charles Dickens", "1860");
-        pickwickPapers = new Book("The Pickwick Papers", "Charles Dickens", "1837");
-        bleakHouse = new Book("Bleak House", "Charles Dickens", "1853");
+        greatExpectations = mock(Book.class);
+        pickwickPapers = mock(Book.class);
+        bleakHouse = mock(Book.class);
+
+        when(greatExpectations.getTitle()).thenReturn("Great Expectations");
+        when(pickwickPapers.getTitle()).thenReturn("Pickwick Papers");
+
         books = new HashSet<>();
         books.add(greatExpectations);
         books.add(pickwickPapers);
@@ -63,18 +71,30 @@ public class LibraryTests {
 
     @Test
     public void testGetListOfItems() {
+        when(greatExpectations.isAvailable()).thenReturn(true);
+        when(pickwickPapers.isAvailable()).thenReturn(true);
         assertThat(library.getItems(), is(Arrays.asList(greatExpectations, pickwickPapers)));
+    }
+
+    @Test
+    public void testVerifyItemExists() throws LibraryItemNotFoundException {
+        library.verifyItemExists(greatExpectations);
+    }
+
+    @Test(expected = LibraryItemNotFoundException.class)
+    public void testVerifyItemExistsThrowsExceptionIfItDoesntExist() throws LibraryItemNotFoundException {
+        library.verifyItemExists(mock(Book.class));
     }
 
     @Test
     public void testCheckoutItemThatExistsAndIsAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
         library.checkoutItem(greatExpectations, customer);
-        assertThat(greatExpectations.isCheckedOut(), is(true));
+        verify(greatExpectations, times(1)).checkOut(customer);
     }
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckoutItemThatExistsButIsUnavailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, customer);
+        doThrow(new LibraryItemNotAvailableException()).when(greatExpectations).checkOut(customer);
         library.checkoutItem(greatExpectations, customer);
     }
 
@@ -88,16 +108,10 @@ public class LibraryTests {
         library.checkoutItem(null, customer);
     }
 
-    @Test(expected = CustomerRequiredException.class)
-    public void testCheckoutItemWithNullCustomerThrowsAnException() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, null);
-    }
-
     @Test
     public void testCheckoutItemByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
         library.checkoutItemByTitle("Great Expectations", customer);
-        assertThat(greatExpectations.isCheckedOut(), is(true));
-        assertThat(library.getItems(), is(Arrays.asList(pickwickPapers)));
+        verify(greatExpectations, times(1)).checkOut(customer);
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
@@ -107,26 +121,27 @@ public class LibraryTests {
 
     @Test(expected = LibraryItemNotAvailableException.class)
     public void testCheckOutItemByTitleThatIsntAvailable() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, customer);
+        doThrow(new LibraryItemNotAvailableException()).when(greatExpectations).checkOut(customer);
         library.checkoutItemByTitle("Great Expectations", customer);
     }
 
     @Test
     public void testCheckedOutItemDoesNotShowInItemList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, customer);
+        when(greatExpectations.isAvailable()).thenReturn(false);
+        when(pickwickPapers.isAvailable()).thenReturn(true);
         assertThat(library.getItems(), is(Arrays.asList(pickwickPapers)));
     }
 
     @Test
     public void testReturnItemThatExistsAndIsCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, customer);
+        when(greatExpectations.isAvailable()).thenReturn(false);
         library.returnItem(greatExpectations);
-        assertThat(greatExpectations.isAvailable(), is(true));
+        verify(greatExpectations, times(1)).checkIn();
     }
 
-    @Test(expected = LibraryItemNotCheckedOutException.class)
-    public void testReturnItemThatExistsButIsntCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
-        library.returnItem(greatExpectations);
+    @Test(expected = LibraryItemNotFoundException.class)
+    public void testVerifyThatItemDoesntExist() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+        library.verifyItemExists(mock(Book.class));
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
@@ -135,15 +150,14 @@ public class LibraryTests {
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
-    public void testReturnNullItem() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+    public void testReturnNullItemThrowsNotFoundException() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
         library.returnItem(null);
     }
 
     @Test
     public void testReturnItemByTitle() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, customer);
         library.returnItemByTitle("Great Expectations");
-        assertThat(greatExpectations.isAvailable(), is(true));
+        verify(greatExpectations, times(1)).checkIn();
     }
 
     @Test(expected = LibraryItemNotFoundException.class)
@@ -153,14 +167,8 @@ public class LibraryTests {
 
     @Test(expected = LibraryItemNotCheckedOutException.class)
     public void testReturnItemByTitleThatHasntBeenCheckedOut() throws LibraryItemNotFoundException, LibraryItemNotCheckedOutException {
+        doThrow(LibraryItemNotCheckedOutException.class).when(greatExpectations).checkIn();
         library.returnItemByTitle("Great Expectations");
-    }
-
-    @Test
-    public void testReturnedItemShowsUpInItemList() throws LibraryItemNotFoundException, LibraryItemNotAvailableException, LibraryItemNotCheckedOutException, CustomerRequiredException {
-        library.checkoutItem(greatExpectations, customer);
-        library.returnItem(greatExpectations);
-        assertThat(library.getItems(), is(Arrays.asList(greatExpectations,pickwickPapers)));
     }
 
     @Test

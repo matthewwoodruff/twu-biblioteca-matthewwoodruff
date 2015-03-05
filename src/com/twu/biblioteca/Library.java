@@ -53,7 +53,7 @@ public class Library<T extends LibraryItem> {
         item.checkIn();
     }
 
-    private void verifyItemExists(T item) throws LibraryItemNotFoundException {
+    void verifyItemExists(T item) throws LibraryItemNotFoundException {
         if(item == null || !items.contains(item))
             throw new LibraryItemNotFoundException();
     }
