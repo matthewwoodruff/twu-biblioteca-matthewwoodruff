@@ -18,13 +18,15 @@ public final class BibliotecaApp {
     private final OutputStream outputStream;
     private final Menu<BibliotecaApp> menu;
 
-    private final SecurityContext securityContext = new SecurityContext(Customer.getCustomers());
+    private final SecurityContext securityContext;
 
-    BibliotecaApp(Scanner scanner, OutputStream outputStream, Library<?>... libraries) {
+    BibliotecaApp(Scanner scanner, OutputStream outputStream, SecurityContext securityContext, Library<?>... libraries) {
         if (scanner == null) throw new IllegalArgumentException("scanner cannot be null");
         if (outputStream == null) throw new IllegalArgumentException("output stream cannot be null");
+        if (securityContext == null) throw new IllegalArgumentException("securityContext cannot be null");
         this.scanner = scanner;
         this.outputStream = outputStream;
+        this.securityContext = securityContext;
 
         final List<Option<BibliotecaApp>> options = new ArrayList<>();
         options.add(new LoginOption());
@@ -122,8 +124,9 @@ public final class BibliotecaApp {
     public static void main(String[] args) throws Exception {
         final Library<?> movieLibrary = new Library<>(Movie.getMovies(), Movie.class);
         final Library<?> bookLibrary = new Library<>(Book.getBooks(), Book.class);
+        final SecurityContext securityContext = new SecurityContext(Customer.getCustomers());
         final BibliotecaApp app =
-                new BibliotecaApp(new Scanner(System.in), System.out, bookLibrary, movieLibrary);
+                new BibliotecaApp(new Scanner(System.in), System.out, securityContext, bookLibrary, movieLibrary);
         try {
             app.run();
         } catch (BibliotecaAppQuitException e) {

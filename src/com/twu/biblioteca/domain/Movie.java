@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Created by Matt on 24/02/15.
  */
-public final class Movie extends LibraryItem<Movie> {
+public class Movie extends LibraryItem<Movie> {
 
     private final String director;
     private final Integer rating;
