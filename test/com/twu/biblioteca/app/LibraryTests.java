@@ -1,5 +1,6 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.app;
 
+import com.twu.biblioteca.app.Library;
 import com.twu.biblioteca.domain.Book;
 import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.exceptions.CustomerRequiredException;
@@ -19,6 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Created by Matt on 23/02/15.
@@ -27,26 +29,27 @@ public class LibraryTests {
 
     private Library<Book> library;
 
+    @Mock
     private Book greatExpectations;
+    @Mock
     private Book pickwickPapers;
+    @Mock
     private Book bleakHouse;
 
     private Set<Book> books;
 
-    /* todo Annotation not working */
     @Mock
     private Customer customer;
 
     @Before
     public void setup() {
-        customer = mock(Customer.class);
-
-        greatExpectations = mock(Book.class);
-        pickwickPapers = mock(Book.class);
-        bleakHouse = mock(Book.class);
+        initMocks(this);
 
         when(greatExpectations.getTitle()).thenReturn("Great Expectations");
-        when(pickwickPapers.getTitle()).thenReturn("Pickwick Papers");
+        when(greatExpectations.compareTo(any(Book.class))).thenCallRealMethod();
+
+        when(pickwickPapers.getTitle()).thenReturn("The Pickwick Papers");
+        when(pickwickPapers.compareTo(any(Book.class))).thenCallRealMethod();
 
         books = new HashSet<>();
         books.add(greatExpectations);
@@ -194,6 +197,7 @@ public class LibraryTests {
     @Test
     public void testGetNameOfItemsInLibrary() {
         assertThat(library.getItemsName(), is("Book"));
+        assertThat(library.getItemsNameLowercase(), is("book"));
     }
 
 }

@@ -2,14 +2,9 @@ package com.twu.biblioteca.domain;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 /**
  * Created by Matt on 23/02/15.
@@ -61,8 +56,8 @@ public class BookTests {
     @Test
     public void testBookEquality() {
         final Book book = new Book("Great Expectations", "Charles Dickens", "1860");
-        assertThat(book, is(book));
-        assertThat(book.hashCode(), is(book.hashCode()));
+        assertThat(book.equals(this.book), is(true));
+        assertThat(book.hashCode(), is(this.book.hashCode()));
     }
 
     @Test

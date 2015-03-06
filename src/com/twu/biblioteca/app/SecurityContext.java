@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.app;
 
 import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.exceptions.CustomerRequiredException;
@@ -41,10 +41,6 @@ public class SecurityContext implements SecurityStatus {
     void logout() throws CustomerRequiredException {
         verifyCustomerIsLoggedIn();
         customer = null;
-    }
-
-    Customer getCustomer() {
-        return customer;
     }
 
     void login(String libraryNumber, String password) throws InvalidCredentialsException, IOException {

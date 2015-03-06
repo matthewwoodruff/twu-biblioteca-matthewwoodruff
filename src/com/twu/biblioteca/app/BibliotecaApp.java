@@ -1,4 +1,4 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.app;
 
 import com.twu.biblioteca.domain.Book;
 import com.twu.biblioteca.domain.Customer;
@@ -7,12 +7,13 @@ import com.twu.biblioteca.domain.Movie;
 import com.twu.biblioteca.exceptions.*;
 import com.twu.biblioteca.helper.Menu;
 import com.twu.biblioteca.helper.Option;
+import com.twu.biblioteca.app.BibliotecaAppMenuOption.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
-public final class BibliotecaApp {
+public class BibliotecaApp {
 
     private final Scanner scanner;
     private final OutputStream outputStream;
@@ -29,8 +30,8 @@ public final class BibliotecaApp {
         this.securityContext = securityContext;
 
         final List<Option<BibliotecaApp>> options = new ArrayList<>();
-        options.add(new LoginOption());
-        for(Library<? extends LibraryItem> library : libraries) {
+        options.add(new BibliotecaAppMenuOption.LoginOption());
+        for(Library<?> library : libraries) {
             options.add(new ListOption(library));
             options.add(new CheckoutOption(library));
             options.add(new ReturnOption(library));
@@ -131,82 +132,6 @@ public final class BibliotecaApp {
             app.run();
         } catch (BibliotecaAppQuitException e) {
             System.exit(0);
-        }
-    }
-
-    SecurityContext getSecurityContext() {
-        return securityContext;
-    }
-
-    private static class ListOption extends Option<BibliotecaApp> {
-        private final Library<?> library;
-        private ListOption(final Library<?> library) {
-            super("List " + library.getItemsName() + "s", null);
-            this.library = library;
-        }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.listItems(library);
-        }
-    }
-
-    private static class CheckoutOption extends Option<BibliotecaApp> {
-        private final Library<?> library;
-        private CheckoutOption(final Library<?> library) {
-            super("Checkout " + library.getItemsName(), "<Title>", true);
-            this.library = library;
-        }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.checkoutItem(arg, library);
-        }
-    }
-
-    private static class ReturnOption extends Option<BibliotecaApp> {
-        private final Library<?> library;
-        private ReturnOption(final Library<?> library) {
-            super("Return " + library.getItemsName(), "<Title>", true);
-            this.library = library;
-        }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.returnItem(arg, library);
-        }
-    }
-
-    private static class MyDetailsOption extends Option<BibliotecaApp> {
-        private MyDetailsOption() {
-            super("My Details", true);
-        }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.viewMyDetails();
-        }
-    }
-
-    private static class QuitOption extends Option<BibliotecaApp> {
-        private QuitOption() { super("Quit", null); }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.quit();
-        }
-    }
-
-    private static class LoginOption extends Option<BibliotecaApp> {
-        private LoginOption() { super("Login", "<Library Number> <Password>", false); }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            final String[] args = arg.split(" ");
-            if(args.length != 2) throw new CommandNotFoundException();
-            target.login(args[0], args[1]);
-        }
-    }
-
-    private static class LogoutOption extends Option<BibliotecaApp> {
-        private LogoutOption() { super("Logout", true); }
-        @Override
-        public void execute(BibliotecaApp target, String arg) throws Exception {
-            target.logout();
         }
     }
 

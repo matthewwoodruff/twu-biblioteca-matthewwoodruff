@@ -1,6 +1,6 @@
 package com.twu.biblioteca.helper;
 
-import com.twu.biblioteca.SecurityContext;
+import com.twu.biblioteca.app.SecurityContext;
 import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.exceptions.CommandNotFoundException;
 import org.junit.Before;

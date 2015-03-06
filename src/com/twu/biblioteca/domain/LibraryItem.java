@@ -58,7 +58,7 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
 
     @Override
     public int compareTo(T o) {
-        return title.compareTo(o.getTitle());
+        return this.getTitle().compareTo(o.getTitle());
     }
 
     @Override
@@ -81,15 +81,6 @@ public abstract class LibraryItem<T extends LibraryItem> implements Comparable<T
         result = 31 * result + year.hashCode();
         result = 31 * result + (checkedOutBy != null ? checkedOutBy.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "LibraryItem{" +
-                "title='" + title + '\'' +
-                ", year='" + year + '\'' +
-                ", checkedOutBy=" + checkedOutBy +
-                '}';
     }
 
     public abstract String getCSVRepresentation();

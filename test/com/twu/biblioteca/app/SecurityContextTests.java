@@ -1,17 +1,21 @@
-package com.twu.biblioteca;
+package com.twu.biblioteca.app;
 
+import com.twu.biblioteca.app.SecurityContext;
 import com.twu.biblioteca.domain.Customer;
 import com.twu.biblioteca.exceptions.CustomerRequiredException;
 import com.twu.biblioteca.exceptions.InvalidCredentialsException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Created by Matt on 27/02/15.
@@ -19,13 +23,20 @@ import static org.mockito.Mockito.when;
 public class SecurityContextTests {
 
     private SecurityContext securityContext;
+    @Mock
     private Customer customer;
+
+    private Set<Customer> customers;
 
     @Before
     public void setup() throws InvalidCredentialsException {
-        securityContext = new SecurityContext(Customer.getCustomers());
-        customer = mock(Customer.class);
+        initMocks(this);
+
         when(customer.getLibraryNumber()).thenReturn("123-4567");
+
+        customers = new HashSet<>();
+        customers.add(customer);
+        securityContext = new SecurityContext(customers);
     }
 
     /*
@@ -39,13 +50,14 @@ public class SecurityContextTests {
 
     @Test
     public void testCanLogIn() throws InvalidCredentialsException, IOException {
-        setCustomer();
+        loginCustomer();
+        verify(customer, times(1)).verifyPassword("Password1");
         assertThat(securityContext.isCustomerLoggedIn(), is(true));
     }
 
     @Test
     public void testCanLoginAndLogout() throws IOException, InvalidCredentialsException, CustomerRequiredException {
-        setCustomer();
+        loginCustomer();
         assertThat(securityContext.isCustomerLoggedIn(), is(true));
         securityContext.logout();
         assertThat(securityContext.isCustomerLoggedIn(), is(false));
@@ -53,7 +65,7 @@ public class SecurityContextTests {
 
     @Test(expected = CustomerRequiredException.class)
     public void testLogoutThrowsExceptionIfNotLoggedIn() throws IOException, InvalidCredentialsException, CustomerRequiredException {
-        securityContext.logout(); 
+        securityContext.logout();
     }
 
     @Test(expected = InvalidCredentialsException.class)
@@ -63,12 +75,13 @@ public class SecurityContextTests {
 
     @Test(expected = InvalidCredentialsException.class)
     public void testLoginWithBadCredentials() throws InvalidCredentialsException, IOException {
+        doThrow(new InvalidCredentialsException()).when(customer).verifyPassword("Password2");
         securityContext.login("123-4567", "Password2");
     }
 
     @Test
     public void testGetLoggedInCustomer() throws InvalidCredentialsException, IOException, CustomerRequiredException {
-        setCustomer();
+        loginCustomer();
         assertThat(securityContext.getLoggedInCustomer(), is(customer));
     }
 
@@ -77,8 +90,8 @@ public class SecurityContextTests {
         securityContext.getLoggedInCustomer();
     }
 
-    private void setCustomer() throws InvalidCredentialsException, IOException {
-        securityContext.setCustomer(customer, "Password1");
+    private void loginCustomer() throws InvalidCredentialsException, IOException {
+        securityContext.login("123-4567", "Password1");
     }
 
 }

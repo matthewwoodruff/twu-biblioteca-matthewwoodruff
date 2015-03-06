@@ -89,7 +89,7 @@ public class MovieTests {
     @Test
     public void testMovieEquality() {
         final Movie movie = new Movie("Pulp Fiction", "1994", "Quentin Tarantino", 9);
-        assertThat(pulpFiction, is(movie));
+        assertThat(pulpFiction.equals(movie), is(true));
         assertThat(pulpFiction.hashCode(), is(movie.hashCode()));
     }
 

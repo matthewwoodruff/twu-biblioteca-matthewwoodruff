@@ -42,13 +42,6 @@ public class Book extends LibraryItem<Book> {
     }
 
     @Override
-    public String toString() {
-        return "Book{" +
-                "author='" + author + '\'' +
-                "} " + super.toString();
-    }
-
-    @Override
     public String getCSVRepresentation() {
         return getTitle() + ", " + author + ", " + getYear();
     }

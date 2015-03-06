@@ -60,14 +60,6 @@ public class Movie extends LibraryItem<Movie> {
     }
 
     @Override
-    public String toString() {
-        return "Movie{" +
-                "director='" + director + '\'' +
-                ", rating=" + rating +
-                "} " + super.toString();
-    }
-
-    @Override
     public String getCSVRepresentation() {
         return getTitle() + ", " + director + ", " + getYear() + ", " + (rating == null ? "Unrated" : rating);
     }
@@ -86,4 +78,3 @@ public class Movie extends LibraryItem<Movie> {
     }
 
 }
-
