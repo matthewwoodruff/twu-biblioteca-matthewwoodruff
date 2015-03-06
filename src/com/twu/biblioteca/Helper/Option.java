@@ -28,7 +28,6 @@ public abstract class Option<T> {
         return command;
     }
     public String getDisplay() { return display; }
-    public boolean requiresSecure() { return requiresSecure; }
 
     public boolean isDisplayForLoginStatus(boolean loggedIn) { return displayState == null || (displayState == loggedIn);}
 

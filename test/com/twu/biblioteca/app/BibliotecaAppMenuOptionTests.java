@@ -58,7 +58,6 @@ public class BibliotecaAppMenuOptionTests {
     public void testCheckoutOptionDisplaysCorrectlyForLoginStatus() {
         assertThat(new CheckoutOption(library).isDisplayForLoginStatus(false), is(false));
         assertThat(new CheckoutOption(library).isDisplayForLoginStatus(true), is(true));
-        assertThat(new CheckoutOption(library).requiresSecure(), is(true));
     }
 
     @Test
@@ -77,7 +76,6 @@ public class BibliotecaAppMenuOptionTests {
     public void testReturnOptionDisplaysCorrectlyForLoginStatus() {
         assertThat(new ReturnOption(library).isDisplayForLoginStatus(false), is(false));
         assertThat(new ReturnOption(library).isDisplayForLoginStatus(true), is(true));
-        assertThat(new ReturnOption(library).requiresSecure(), is(true));
     }
 
     @Test
@@ -96,7 +94,6 @@ public class BibliotecaAppMenuOptionTests {
     public void testMyDetailsOptionDisplaysCorrectlyForLoginStatus() {
         assertThat(new MyDetailsOption().isDisplayForLoginStatus(false), is(false));
         assertThat(new MyDetailsOption().isDisplayForLoginStatus(true), is(true));
-        assertThat(new MyDetailsOption().requiresSecure(), is(true));
     }
 
     @Test
@@ -121,7 +118,6 @@ public class BibliotecaAppMenuOptionTests {
     public void testQuitOptionDisplaysCorrectlyForLoginStatus() {
         assertThat(new QuitOption().isDisplayForLoginStatus(false), is(true));
         assertThat(new QuitOption().isDisplayForLoginStatus(true), is(true));
-        assertThat(new QuitOption().requiresSecure(), is(false));
     }
 
     @Test
@@ -140,7 +136,6 @@ public class BibliotecaAppMenuOptionTests {
     public void testLoginOptionDisplaysCorrectlyForLoginStatus() {
         assertThat(new LoginOption().isDisplayForLoginStatus(false), is(true));
         assertThat(new LoginOption().isDisplayForLoginStatus(true), is(false));
-        assertThat(new LoginOption().requiresSecure(), is(false));
     }
 
     @Test
@@ -153,7 +148,6 @@ public class BibliotecaAppMenuOptionTests {
     public void testLogoutOptionDisplaysCorrectlyForLoginStatus() {
         assertThat(new LogoutOption().isDisplayForLoginStatus(false), is(false));
         assertThat(new LogoutOption().isDisplayForLoginStatus(true), is(true));
-        assertThat(new LogoutOption().requiresSecure(), is(true));
     }
 
     @Test

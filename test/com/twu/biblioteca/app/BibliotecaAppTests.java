@@ -10,6 +10,8 @@ import com.twu.biblioteca.exceptions.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -132,7 +134,14 @@ public class BibliotecaAppTests {
 
     @Test
     public void testCustomerSelectsLoginOption() throws Exception {
-        stubCustomer();
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                stubCustomer();
+                return null;
+            }
+        }).when(securityContext).login("123-4567", "Password1");
+
         app.selectMenuOption("Login: 123-4567 Password1");
         verify(securityContext, times(1)).login("123-4567", "Password1");
         assertThatLoginSuccessMessageAndMainMenuIsDisplayed();

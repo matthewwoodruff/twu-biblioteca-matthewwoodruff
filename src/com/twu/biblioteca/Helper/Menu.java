@@ -27,7 +27,7 @@ public class Menu<T> {
     }
 
     private void verifyOptionCanBeExecuted(Option<T> option) throws CustomerRequiredException {
-        if(option.requiresSecure() && !securityStatus.isCustomerLoggedIn())
+        if(!option.isDisplayForLoginStatus(securityStatus.isCustomerLoggedIn()))
             throw new CustomerRequiredException();
     }
 
