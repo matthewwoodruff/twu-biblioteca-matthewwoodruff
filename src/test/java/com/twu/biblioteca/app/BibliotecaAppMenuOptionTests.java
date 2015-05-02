@@ -152,7 +152,7 @@ public class BibliotecaAppMenuOptionTests {
 
     @Test
     public void testLogoutOptionHasCorrectCommandAndDisplay() throws Exception {
-        assertThat(new LogoutOption().getCommand(), is("Logouty"));
+        assertThat(new LogoutOption().getCommand(), is("Logout"));
         assertThat(new LogoutOption().getDisplay(), is("Logout"));
     }
 
